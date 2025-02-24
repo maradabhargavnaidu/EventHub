@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { Check } from "lucide-react";
 
 const Pricing = () => {
-    const [isAnnual, setIsAnnual] = useState(false);
-
     const tiers = [
         {
             name: "Basic",

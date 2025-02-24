@@ -1,5 +1,3 @@
-import React from 'react'
-import Navbar from '../components/Navbar'
 import Header from '../components/Header'
 import WhyChooseUs from '../components/WhyChooseUs'
 import Footer from '../components/Footer'

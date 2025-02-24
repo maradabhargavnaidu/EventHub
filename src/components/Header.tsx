@@ -53,10 +53,11 @@ const Header = () => {
           animate="visible"
         >
           <motion.div
+            className="flex justify-center mb-6"
+            // variants={floatAnimation}
             variants={floatAnimation}
             initial="hidden"
             animate="visible"
-            className="flex justify-center mb-6"
           >
             <Sparkles className="w-12 h-12 text-yellow-500/80" />
           </motion.div>
