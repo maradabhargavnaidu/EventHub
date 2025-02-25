@@ -26,18 +26,18 @@ const Header = () => {
     },
   };
 
-  const floatAnimation = {
-    hidden: { y: 0 },
-    visible: {
-      y: [-10, 10, -10],
-      transition: {
-        duration: 6,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut",
-      },
-    },
-  };
+  // const floatAnimation = {
+  //   hidden: { y: 0 },
+  //   visible: {
+  //     y: [-10, 10, -10],
+  //     transition: {
+  //       duration: 6,
+  //       repeat: Infinity,
+  //       repeatType: "reverse",
+  //       ease: "easeInOut",
+  //     },
+  //   },
+  // };
 
   return (
     <section className="relative min-h-[90vh] flex items-center bg-[#1E1E1E] overflow-hidden">
