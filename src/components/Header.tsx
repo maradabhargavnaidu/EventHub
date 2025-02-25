@@ -55,7 +55,7 @@ const Header = () => {
           <motion.div
             className="flex justify-center mb-6"
             // variants={floatAnimation}
-            variants={floatAnimation}
+            // variants={floatAnimation}
             initial="hidden"
             animate="visible"
           >
