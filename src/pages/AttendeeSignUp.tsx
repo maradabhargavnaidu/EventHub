@@ -24,23 +24,6 @@ const AttendeeSignUp = () => {
         setForm({ ...form, [id]: value });
         setErrors((prevErrors) => ({ ...prevErrors, [id]: "" }));
     };
-    const validateForm = async () => {
-        try {
-            const { confirmPassword, ...formData } = form;
-            await registerAttendeeSchema.validate(formData, { abortEarly: false });
-            setErrors({});
-            return true;
-        } catch (err) {
-            if (err instanceof Yup.ValidationError) {
-                const newErrors: { [key: string]: string } = {};
-                err.inner.forEach((error) => {
-                    if (error.path) newErrors[error.path] = error.message;
-                });
-                setErrors(newErrors);
-            }
-            return false;
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
