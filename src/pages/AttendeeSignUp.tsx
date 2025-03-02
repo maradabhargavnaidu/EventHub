@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Mail, Phone, User, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../components/InputField";
-import * as Yup from "yup";
 import { registerAttendeeSchema } from '../validations/Attendee'
 import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
