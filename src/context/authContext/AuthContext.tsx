@@ -2,9 +2,9 @@ import { createContext, useEffect, useReducer } from "react";
 import { init, reducer } from "./AuthReducer";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Payload, AuthState } from "../../types/types";
+import { Payload, AuthContextType } from "../../types/types";
 
-export const AuthContext = createContext<AuthState>({ state: null, dispatch: () => { } });
+export const AuthContext = createContext<AuthContextType>({ state: null, dispatch: () => null });
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, init);

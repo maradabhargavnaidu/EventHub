@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Building2, Mail, Phone, User, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import InputField from "../components/InputField";
+import InputField from "../../components/InputField";
 
 const EventHostSignup = () => {
     const [form, setForm] = useState({
