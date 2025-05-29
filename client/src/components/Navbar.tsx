@@ -117,7 +117,35 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                <div className="space-y-2 pt-4">
+                {state?.isAuthenticated ? (
+                  <div className="space-y-2 pt-4">
+                    <Link
+                      to="/login"
+                      className="block w-full rounded-lg px-3 py-2 text-center text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="block w-full rounded-lg px-3 py-2 text-center text-base font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Get started
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-2 pt-4">
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setIsOpen(false)}
+                      className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 hover:scale-105"
+                    >
+                      Dashboard
+                    </Link>
+                  </div>
+                )}
+                {/* <div className="space-y-2 pt-4">
                   <Link
                     to="/login"
                     className="block w-full rounded-lg px-3 py-2 text-center text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
@@ -132,7 +160,7 @@ const Navbar = () => {
                   >
                     Get started
                   </Link>
-                </div>
+                </div> */}
               </div>
             </motion.div>
           )}
