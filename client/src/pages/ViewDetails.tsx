@@ -8,11 +8,14 @@ const ViewDetails = () => {
   const getEventDetails = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get(`https://localhost:5000/get-event-by-id`, {
-        headers: {
-          authorization: token,
-        },
-      });
+      const res = await axios.get(
+        `https://eventhub-qrau.onrender.com/get-event-by-id`,
+        {
+          headers: {
+            authorization: token,
+          },
+        }
+      );
       console.log(res.data);
     } catch (err) {
       console.log(err);

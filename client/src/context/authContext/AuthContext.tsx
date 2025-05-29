@@ -1,7 +1,6 @@
 import { createContext, useEffect, useReducer } from "react";
 import { init, reducer } from "./AuthReducer";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { Payload, AuthContextType } from "../../types/types";
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,7 +18,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (token) {
       const giveAccess = async () => {
         const { data } = await axios.get(
-          "http://localhost:5000/api/auth/profile",
+          "https://eventhub-qrau.onrender.com/api/auth/profile",
           {
             headers: {
               authorization: token,

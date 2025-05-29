@@ -31,7 +31,7 @@ const EventHostSignup = () => {
     if (isValid) {
       try {
         const { data } = await axios.post(
-          `http://localhost:5000/api/auth/register`,
+          `https://eventhub-qrau.onrender.com/api/auth/register`,
           updatedFormData
         );
         if (data) {

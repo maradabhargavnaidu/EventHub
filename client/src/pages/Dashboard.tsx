@@ -29,7 +29,7 @@ export default function Dashboard() {
     try {
       if (state?.role == "host") {
         const res = await axios.get(
-          "http://localhost:5000/api/events/get-your-events",
+          "https://eventhub-qrau.onrender.com/api/events/get-your-events",
           {
             headers: {
               authorization: token,
@@ -39,7 +39,7 @@ export default function Dashboard() {
         setEvents(res.data);
       } else {
         const res = await axios.get(
-          "http://localhost:5000/api/events/get-events",
+          "https://eventhub-qrau.onrender.com/api/events/get-events",
           {
             headers: {
               authorization: token,

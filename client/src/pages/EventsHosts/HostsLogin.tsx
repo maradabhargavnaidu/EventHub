@@ -22,7 +22,7 @@ export default function HostsLogin() {
     if (isValid) {
       try {
         const { data } = await axios.post(
-          "http://localhost:5000/api/auth/login",
+          "https://eventhub-qrau.onrender.com/api/auth/login",
           { ...form, role: "host" }
         );
         const { user } = data;

@@ -96,7 +96,7 @@ const CreateEvent = () => {
     if (isValid && token) {
       try {
         const data = await axios.post(
-          "http://localhost:5000/api/events/create-event",
+          "https://eventhub-qrau.onrender.com/api/events/create-event",
           eventData,
           {
             headers: {
