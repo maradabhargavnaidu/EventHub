@@ -13,7 +13,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(reducer, init);
-  const Navigate = useNavigate();
+  // const Navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -29,7 +29,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (data) {
           const { user }: { user: Payload } = data;
           dispatch({ type: "LOGIN", payload: user });
-          Navigate("/dashboard");
+          // Navigate("/dashboard");
         } else {
           dispatch({ type: "LOGOUT" });
         }

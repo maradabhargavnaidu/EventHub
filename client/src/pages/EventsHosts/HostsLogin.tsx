@@ -23,12 +23,12 @@ export default function HostsLogin() {
       try {
         const { data } = await axios.post(
           "http://localhost:5000/api/auth/login",
-          form
+          { ...form, role: "host" }
         );
         const { user } = data;
         if (user) {
           dispatch({ type: "LOGIN", payload: user });
-          Navigate("/attendee-dashboard");
+          Navigate("/dashboard");
         }
       } catch (error) {
         console.log(error);

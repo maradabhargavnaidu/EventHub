@@ -47,24 +47,30 @@ const Navbar = () => {
             ))}
             <div className="flex items-center space-x-4 ml-4 relative">
               {state?.isAuthenticated ? (
-                <div className="relative">
-                  <UserCircle2
-                    color="white"
-                    className="cursor-pointer"
-                    width={30}
-                    height={30}
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                  />
+                // <div className="relative">
+                //   <UserCircle2
+                //     color="white"
+                //     className="cursor-pointer"
+                //     width={30}
+                //     height={30}
+                //     onClick={() => setDropdownOpen(!dropdownOpen)}
+                //   />
 
-                  {/* {!dropdownOpen && (
-                    <DropDown
-                      setDropDownOpen={() => setDropdownOpen(dropdownOpen)}
-                      dropdownOpen={dropdownOpen}
-                      state={state}
-                      dispatch={dispatch}
-                    />
-                  )} */}
-                </div>
+                //   {/* {!dropdownOpen && (
+                //     <DropDown
+                //       setDropDownOpen={() => setDropdownOpen(dropdownOpen)}
+                //       dropdownOpen={dropdownOpen}
+                //       state={state}
+                //       dispatch={dispatch}
+                //     />
+                //   )} */}
+                // </div>
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 hover:scale-105"
+                >
+                  Dashboard
+                </Link>
               ) : (
                 <Link
                   to="/get-started"

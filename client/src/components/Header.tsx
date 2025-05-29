@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Calendar, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Header = () => {
+  const { state, dispatch } = useAuth();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -80,20 +82,32 @@ const Header = () => {
             className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mt-6 mb-12"
           >
             Plan, organize, and manage your events seamlessly,
-            <span className="text-gray-300">because every event deserves perfection.</span>
+            <span className="text-gray-300">
+              because every event deserves perfection.
+            </span>
           </motion.p>
 
           <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link
-              to="/get-started"
-              className="group flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {state?.isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="group flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+              >
+                Go to Dashboard
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            ) : (
+              <Link
+                to="/get-started"
+                className="group flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-4 px-8 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+              >
+                Get Started
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            )}
 
             <Link
               to="/learn-more"
@@ -115,7 +129,9 @@ const Header = () => {
               <Calendar className="w-10 h-10 text-purple-400" />
               <div className="text-left">
                 <h3 className="text-gray-200 font-medium">Smart Planning</h3>
-                <p className="text-gray-400 text-sm">Automated scheduling & reminders</p>
+                <p className="text-gray-400 text-sm">
+                  Automated scheduling & reminders
+                </p>
               </div>
             </motion.div>
 
@@ -125,8 +141,12 @@ const Header = () => {
             >
               <Users className="w-10 h-10 text-blue-400" />
               <div className="text-left">
-                <h3 className="text-gray-200 font-medium">Team Collaboration</h3>
-                <p className="text-gray-400 text-sm">Work together seamlessly</p>
+                <h3 className="text-gray-200 font-medium">
+                  Team Collaboration
+                </h3>
+                <p className="text-gray-400 text-sm">
+                  Work together seamlessly
+                </p>
               </div>
             </motion.div>
           </motion.div>

@@ -40,7 +40,7 @@ const AttendeeSignUp = () => {
         if (data) {
           const { user } = data;
           dispatch({ type: "LOGIN", payload: user });
-          Navigate("/attendee-dashboard");
+          Navigate("/dashboard");
         }
       } catch (error) {
         console.log(error);

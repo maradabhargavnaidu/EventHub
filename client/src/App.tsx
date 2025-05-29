@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AuthProvider from "./context/authContext/AuthContext";
 import AttendeProtectedRoute from "./routes/AttendeProtectedRoute";
 import CreateEvent from "./pages/CreateEvent";
+import ViewDetails from "./pages/viewDetails";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
 
             <Route path="/attendee-login" element={<AttendeeLogin />} />
             <Route path="/attendee-signup" element={<AttendeeSignUp />} />
+            <Route path="/view-event/:id" element={<ViewDetails />} />
             <Route element={<AttendeProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/create" element={<CreateEvent />} />

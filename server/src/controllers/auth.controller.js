@@ -10,21 +10,36 @@ const {
 } = require("../validations/user.validation");
 
 const register = async (req, res) => {
+  console.log(req.body);
   const { error: validationError } = registerSchema.validate(req.body);
   if (validationError) return res.status(400).json(validationError);
   const { name, mail, phoneNumber, password, role } = req.body;
   try {
-    const findUser = await User.findOne({ mail });
-    if (findUser)
+    const findUser = await User.findOne({ mail, role });
+    if (findUser && findUser.role === role) {
       return res.status(400).json({ message: "User already exists" });
+    }
+
     const hashPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      name,
-      mail,
-      phoneNumber,
-      password: hashPassword,
-      role,
-    });
+    let user = null;
+    if (role === "attendee") {
+      user = await User.create({
+        name,
+        mail,
+        phoneNumber,
+        password: hashPassword,
+        role,
+      });
+    } else {
+      user = await User.create({
+        name,
+        mail,
+        phoneNumber,
+        password: hashPassword,
+        role,
+        organization: req?.body?.organization,
+      });
+    }
 
     if (user) {
       const token = JWTService.sign(
@@ -32,7 +47,7 @@ const register = async (req, res) => {
         jwt_secret,
         "24h"
       );
-      const data = { name, mail, token };
+      const data = { name, mail, token, role };
       return res
         .status(201)
         .json({ message: "User registered successfully ", user: data });
@@ -45,12 +60,12 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { mail, password, role } = req.body;
-  // console.log(req.body);
+  console.log(req.body);
   const { error: validationError } = loginSchema.validate(req.body);
   if (validationError) return res.status(422).send(validationError);
   try {
-    const findUser = await User.findOne({ mail });
-    if (!findUser) res.status(409).json({ message: "Invalid Credentials" });
+    const findUser = await User.findOne({ mail, role });
+    if (!findUser) return res.status(404).json({ message: "User Not Found" });
     console.log(findUser);
     const isPasswordValid = await bcrypt.compare(password, findUser.password);
     if (!isPasswordValid)
@@ -64,7 +79,7 @@ const login = async (req, res) => {
       "24h"
     );
     const fullName = findUser.fullName;
-    const data = { fullName, mail, token: jwtToken };
+    const data = { fullName, mail, token: jwtToken, role };
     return res.status(201).send({ user: data });
   } catch (error) {
     console.log(error);
@@ -84,7 +99,14 @@ const Profile = async (req, res) => {
     const validToken = JWTService.verify(token, jwt_secret);
     if (validToken) {
       const user = await User.findById({ _id: validToken.id });
-      res.json({ user: { fullName: user.username, mail: user.mail, token } });
+      res.json({
+        user: {
+          fullName: user.username,
+          mail: user.mail,
+          token,
+          role: user.role,
+        },
+      });
     }
   } catch (err) {
     console.log(err);

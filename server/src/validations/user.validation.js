@@ -77,6 +77,10 @@ const loginSchema = Joi.object({
     "string.max": "Password cannot exceed 30 characters.",
     "any.required": "Password is required.",
   }),
+  role: Joi.string().valid("host", "attendee").required().messages({
+    "any.only": "Role must be either 'host' or 'attendee'.",
+    "any.required": "Role is required.",
+  }),
 });
 
 module.exports = { registerSchema, loginSchema };
