@@ -117,7 +117,7 @@ const Navbar = () => {
                     {item.name}
                   </Link>
                 ))}
-                {state?.isAuthenticated ? (
+                {!state?.isAuthenticated ? (
                   <div className="space-y-2 pt-4">
                     <Link
                       to="/login"
