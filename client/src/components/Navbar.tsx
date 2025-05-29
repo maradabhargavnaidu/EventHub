@@ -119,15 +119,15 @@ const Navbar = () => {
                 ))}
                 {!state?.isAuthenticated ? (
                   <div className="space-y-2 pt-4">
-                    <Link
+                    {/* <Link
                       to="/login"
                       className="block w-full rounded-lg px-3 py-2 text-center text-base font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Sign in
-                    </Link>
+                    </Link> */}
                     <Link
-                      to="/register"
+                      to="/get-started"
                       className="block w-full rounded-lg px-3 py-2 text-center text-base font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
