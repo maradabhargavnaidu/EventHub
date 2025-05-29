@@ -12,6 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
+import Loader from "../components/Loader";
 
 interface Event {
   _id: string;
@@ -24,10 +25,12 @@ interface Event {
 export default function Dashboard() {
   const { state } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const getEvents = async () => {
     const token = localStorage.getItem("token");
     try {
       if (state?.role == "host") {
+        setLoading(true);
         const res = await axios.get(
           "https://eventhub-qrau.onrender.com/api/events/get-your-events",
           {
@@ -37,7 +40,9 @@ export default function Dashboard() {
           }
         );
         setEvents(res.data);
+        setLoading(false);
       } else {
+        setLoading(true);
         const res = await axios.get(
           "https://eventhub-qrau.onrender.com/api/events/get-events",
           {
@@ -48,6 +53,7 @@ export default function Dashboard() {
         );
         console.log(res.data);
         setEvents(res.data);
+        setLoading(false);
       }
     } catch (err) {
       console.log(err);
@@ -59,6 +65,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen bg-[#1e1e1e] text-white pt-14 mx-auto px-5">
+      {loading && <Loader />}
       {/* Sidebar */}
       <Sidebar />
       {/* <div className="flex justify-center items-center">
