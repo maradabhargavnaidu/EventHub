@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AuthProvider from "./context/authContext/AuthContext";
 import AttendeProtectedRoute from "./routes/AttendeProtectedRoute";
 import CreateEvent from "./pages/CreateEvent";
-import ViewDetails from "./pages/viewDetails";
+import ViewDetails from "./pages/ViewDetails";
 
 const App = () => {
   return (

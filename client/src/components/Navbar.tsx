@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Menu, X, Calendar, UserCircle2 } from "lucide-react";
+import { Menu, X, Calendar } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import DropDown from "./DropDown";
+// import DropDown from "./DropDown";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { state, dispatch } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { state } = useAuth();
+  // const [dropdownOpen] = useState(false);
   // const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const navigation = [

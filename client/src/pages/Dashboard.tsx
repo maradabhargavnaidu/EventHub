@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "../components/card";
 import { useAuth } from "../hooks/useAuth";
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
@@ -22,7 +22,7 @@ interface Event {
 }
 
 export default function Dashboard() {
-  const { state, dispatch } = useAuth();
+  const { state } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const getEvents = async () => {
     const token = localStorage.getItem("token");

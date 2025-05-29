@@ -90,7 +90,6 @@ const CreateEvent = () => {
       ...(eventType === "online" && { url }),
       amount,
     };
-    console.log(eventData);
     const token = localStorage.getItem("token");
     const isValid = await FormValidator(eventSchema, eventData);
     if (isValid && token) {

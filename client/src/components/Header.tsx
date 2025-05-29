@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 const Header = () => {
-  const { state, dispatch } = useAuth();
+  const { state } = useAuth();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
