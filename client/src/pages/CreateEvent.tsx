@@ -3,10 +3,13 @@ import { useState } from "react";
 import { cn } from "../lib/utils";
 import { FormValidator } from "../utils/FormValidator";
 import { eventSchema } from "../validations/Events";
-import axios from "axios";
+// import axios from "axios";
 import Button from "../utils/Button";
 import Input from "../utils/Input";
 import Sidebar from "../components/Sidebar";
+import { api } from "../config/api";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function Textarea({
   className,
@@ -68,7 +71,7 @@ function RadioItem({
     </div>
   );
 }
-
+// react query react hook form skeleton
 const CreateEvent = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -78,9 +81,11 @@ const CreateEvent = () => {
   const [url, setUrl] = useState("");
   const [amount, setAmount] = useState("");
 
+  const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("clicked");
     e.preventDefault();
+    console.log("Submit clicked");
+
     const eventData = {
       title,
       description,
@@ -90,25 +95,29 @@ const CreateEvent = () => {
       ...(eventType === "online" && { url }),
       amount,
     };
-    const token = localStorage.getItem("token");
-    const isValid = await FormValidator(eventSchema, eventData);
-    if (isValid && token) {
-      try {
-        const data = await axios.post(
-          "https://eventhub-qrau.onrender.com/api/events/create-event",
-          eventData,
-          {
-            headers: {
-              authorization: token,
-            },
-          }
-        );
-        console.log(data);
-      } catch (err) {
-        console.log(err);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.success("Authentication failed. Please log in again.");
+        return;
       }
-    } else {
-      console.log("Form not valid");
+
+      const isValid = await FormValidator(eventSchema, eventData);
+      if (!isValid) {
+        toast.error("Please fill all fields correctly.");
+        return;
+      }
+
+      const data = await api.post("/events/create-event");
+      toast.success("Awesome! The event has been created.");
+      navigate("/dashboard");
+      console.log("Event Created:", data);
+    } catch (err) {
+      // console.error("Error while creating event:", err);
+      toast.error(
+        "Something went wrong while creating the event. Please try again."
+      );
     }
   };
 

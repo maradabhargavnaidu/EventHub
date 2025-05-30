@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Button from "../utils/Button";
 import { useAuth } from "../hooks/useAuth";
+import { toast } from "sonner";
 
 const Sidebar = () => {
   const { state, dispatch } = useAuth();
@@ -73,7 +74,12 @@ const Sidebar = () => {
             variant="ghost"
             size="icon"
             className="rounded-full bg-zinc-800 hover:bg-zinc-700 text-white cursor-pointer"
-            onClick={() => dispatch({ type: "LOGOUT" })}
+            onClick={() => {
+              dispatch({ type: "LOGOUT" });
+              toast.success(
+                "See you soon! You’ve been logged out successfully."
+              );
+            }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -2,10 +2,11 @@ import { useState } from "react";
 import { Mail, Phone, User, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerAttendeeSchema } from "../../validations/Attendee";
-import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import { FormValidator } from "../../utils/FormValidator";
 import InputField from "../../components/InputField";
+import { api } from "../../config/api";
+import { toast } from "sonner";
 
 const AttendeeSignUp = () => {
   const { dispatch } = useAuth();
@@ -19,7 +20,6 @@ const AttendeeSignUp = () => {
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setForm({ ...form, [id]: value });
@@ -33,19 +33,19 @@ const AttendeeSignUp = () => {
     const isValid = await FormValidator(registerAttendeeSchema, formData);
     if (isValid) {
       try {
-        const { data } = await axios.post(
-          `https://eventhub-qrau.onrender.com/api/auth/register`,
-          updatedFormData
-        );
+        const { data } = await api.post(`/auth/register`, updatedFormData);
         if (data) {
           const { user } = data;
           dispatch({ type: "LOGIN", payload: user });
+          toast.success("Account created successfully! Welcome aboard.");
           Navigate("/dashboard");
         }
-      } catch (error) {
+      } catch (error: any) {
+        toast.error(error.response.data.message);
         console.log(error);
       }
     } else {
+      toast.error("OOPS! some error occured");
       console.log(isValid);
     }
   };

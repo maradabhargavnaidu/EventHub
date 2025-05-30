@@ -1,44 +1,40 @@
 import { createContext, useEffect, useReducer } from "react";
 import { init, reducer } from "./AuthReducer";
-import axios from "axios";
 import { Payload, AuthContextType } from "../../types/types";
+import { api } from "../../config/api";
+import { toast } from "sonner";
 
 export const AuthContext = createContext<AuthContextType>({
   state: null,
   dispatch: () => null,
 });
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, init);
-  // const Navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const giveAccess = async () => {
-        const { data } = await axios.get(
-          "https://eventhub-qrau.onrender.com/api/auth/profile",
-          {
-            headers: {
-              authorization: token,
-            },
-          }
-        );
+        const { data } = await api.get("/auth/profile");
         if (data) {
           const { user }: { user: Payload } = data;
           dispatch({ type: "LOGIN", payload: user });
+          toast.success("Login successful. Welcome!");
           // Navigate("/dashboard");
         } else {
           dispatch({ type: "LOGOUT" });
+          toast.error("Session expired! Time to log in again.");
         }
       };
       giveAccess();
+    } else {
+      toast.info("Please log in to access the dashboard.");
     }
   }, []);
   return (
     <AuthContext.Provider value={{ state, dispatch }}>
       {children}
+      {/* <Toaster /> */}
     </AuthContext.Provider>
   );
 };

@@ -4,8 +4,9 @@ import { Mail, Lock } from "lucide-react";
 import InputField from "../../components/InputField";
 import { loginHostSchema } from "../../validations/Hosts";
 import { FormValidator } from "../../utils/FormValidator";
-import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
+import { api } from "../../config/api";
+import { toast } from "sonner";
 
 export default function HostsLogin() {
   const { dispatch } = useAuth();
@@ -21,16 +22,19 @@ export default function HostsLogin() {
     const isValid = await FormValidator(loginHostSchema, form);
     if (isValid) {
       try {
-        const { data } = await axios.post(
-          "https://eventhub-qrau.onrender.com/api/auth/login",
-          { ...form, role: "host" }
-        );
+        const { data } = await api.post("/auth/login", {
+          ...form,
+          role: "host",
+        });
         const { user } = data;
         if (user) {
           dispatch({ type: "LOGIN", payload: user });
+          toast.success("Login successful!");
           Navigate("/dashboard");
         }
-      } catch (error) {
+      } catch (error: any) {
+        // if(error?.status===404)
+        toast.error(error.response.data.message);
         console.log(error);
       }
     }

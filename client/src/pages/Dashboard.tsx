@@ -10,9 +10,9 @@ import {
 } from "../components/card";
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import Sidebar from "../components/Sidebar";
-// import Loader from "../components/Loader";
+import { api } from "../config/api";
+import { toast } from "sonner";
 
 interface Event {
   _id: string;
@@ -25,38 +25,19 @@ interface Event {
 export default function Dashboard() {
   const { state } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
-  // const [loading, setLoading] = useState<boolean>(false);
   const getEvents = async () => {
-    const token = localStorage.getItem("token");
     try {
       if (state?.role == "host") {
-        // setLoading(true);
-        const res = await axios.get(
-          "https://eventhub-qrau.onrender.com/api/events/get-your-events",
-          {
-            headers: {
-              authorization: token,
-            },
-          }
-        );
+        const res = await api.get("/events/get-your-events");
         setEvents(res.data);
-        // setLoading(false);
+        toast.success("Got the events. You're good to go!");
       } else {
-        // setLoading(true);
-        const res = await axios.get(
-          "https://eventhub-qrau.onrender.com/api/events/get-events",
-          {
-            headers: {
-              authorization: token,
-            },
-          }
-        );
-        console.log(res.data);
+        const res = await api.get("/events/get-events");
         setEvents(res.data);
-        // setLoading(false);
+        toast.success("Got the events. You're good to go!");
       }
     } catch (err) {
-      console.log(err);
+      toast.error("Oops! Failed to load events. Please try again.");
     }
   };
   useEffect(() => {

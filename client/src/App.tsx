@@ -13,6 +13,7 @@ import AuthProvider from "./context/authContext/AuthContext";
 import AttendeProtectedRoute from "./routes/AttendeProtectedRoute";
 import CreateEvent from "./pages/CreateEvent";
 import ViewDetails from "./pages/ViewDetails";
+import { Toaster } from "sonner";
 
 const App = () => {
   return (
@@ -36,6 +37,18 @@ const App = () => {
               <Route path="/create" element={<CreateEvent />} />
             </Route>
           </Routes>
+          <Toaster
+            position="top-right"
+            expand={true}
+            toastOptions={{
+              style: {
+                marginBottom: "12px",
+                borderRadius: "8px",
+                padding: "12px 16px",
+                // background: "violet",
+              },
+            }}
+          />
         </AuthProvider>
       </BrowserRouter>
     </>

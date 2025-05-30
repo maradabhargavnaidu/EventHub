@@ -4,8 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import InputField from "../../components/InputField";
 import { registerHostSchema } from "../../validations/Hosts";
 import { FormValidator } from "../../utils/FormValidator";
-import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
+import { api } from "../../config/api";
+import { toast } from "sonner";
 
 const EventHostSignup = () => {
   const { dispatch } = useAuth();
@@ -30,16 +31,17 @@ const EventHostSignup = () => {
     const isValid = await FormValidator(registerHostSchema, formData);
     if (isValid) {
       try {
-        const { data } = await axios.post(
-          `https://eventhub-qrau.onrender.com/api/auth/register`,
-          updatedFormData
-        );
+        const { data } = await api.post(`/auth/register`, updatedFormData);
         if (data) {
           const { user } = data;
           dispatch({ type: "LOGIN", payload: user });
+          toast.success(
+            "Welcome aboard! Your account has been created and you're now signed in."
+          );
           Navigate("/dashboard");
         }
-      } catch (error) {
+      } catch (error: any) {
+        toast.error(error.response.data.message);
         console.log(error);
       }
     } else {

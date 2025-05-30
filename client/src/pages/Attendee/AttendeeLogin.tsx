@@ -5,7 +5,9 @@ import InputField from "../../components/InputField";
 import { FormValidator } from "../../utils/FormValidator";
 import { loginAttendeeSchema } from "../../validations/Attendee";
 import { useAuth } from "../../hooks/useAuth";
-import axios from "axios";
+import { api } from "../../config/api";
+import { toast } from "sonner";
+
 export default function AttendeeLogin() {
   const [form, setForm] = useState({ mail: "", password: "" });
   const { dispatch } = useAuth();
@@ -20,16 +22,18 @@ export default function AttendeeLogin() {
     const isValid = await FormValidator(loginAttendeeSchema, form);
     if (isValid) {
       try {
-        const { data } = await axios.post(
-          "https://eventhub-qrau.onrender.com/api/auth/login",
-          { ...form, role: "attendee" }
-        );
+        const { data } = await api.post("/auth/login", {
+          ...form,
+          role: "attendee",
+        });
         const { user } = data;
         if (user) {
           dispatch({ type: "LOGIN", payload: user });
+          toast.success("Login successful. Welcome!");
           Navigate("/dashboard");
         }
-      } catch (error) {
+      } catch (error: any) {
+        toast.error(error.response.data.message);
         console.log(error);
       }
     }
