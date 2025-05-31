@@ -48,9 +48,8 @@ const App = () => {
             <Route path="/host-login" element={<HostsLogin />} />
             <Route path="/attendee-login" element={<AttendeeLogin />} />
             <Route path="/attendee-signup" element={<AttendeeSignUp />} />
-
-            <Route element={<Layout />}>
-              <Route element={<AttendeProtectedRoute />}>
+            <Route element={<AttendeProtectedRoute />}>
+              <Route element={<Layout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/create" element={<CreateEvent />} />
                 <Route path="/view-event/:id" element={<ViewDetails />} />
