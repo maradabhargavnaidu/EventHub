@@ -78,8 +78,8 @@ const login = async (req, res) => {
       jwt_secret,
       "24h"
     );
-    const fullName = findUser.fullName;
-    const data = { fullName, mail, token: jwtToken, role };
+    const name = findUser.name;
+    const data = { name, mail, token: jwtToken, role };
     return res.status(201).send({ user: data });
   } catch (error) {
     console.log(error);
@@ -101,7 +101,7 @@ const Profile = async (req, res) => {
       const user = await User.findById({ _id: validToken.id });
       res.json({
         user: {
-          fullName: user.username,
+          name: user.name,
           mail: user.mail,
           token,
           role: user.role,

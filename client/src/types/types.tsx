@@ -6,7 +6,7 @@ export type Payload = {
   token: string;
   isAuthenticated: boolean;
   isLoading: boolean;
-  fullName: string;
+  name: string;
   mail: string;
   role: string;
 };

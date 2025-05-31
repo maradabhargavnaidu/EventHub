@@ -3,36 +3,42 @@ import styled from "styled-components";
 
 const Loader = () => {
   return (
-    <StyledWrapper>
-      <div className="hourglassBackground">
-        <div className="hourglassContainer">
-          <div className="hourglassCurves" />
-          <div className="hourglassCapTop" />
-          <div className="hourglassGlassTop" />
-          <div className="hourglassSand" />
-          <div className="hourglassSandStream" />
-          <div className="hourglassCapBottom" />
-          <div className="hourglassGlass" />
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center backdrop-blur-sm bg-white/10 ">
+      <StyledWrapper>
+        <div className="hourglassBackground">
+          <div className="hourglassContainer">
+            <div className="hourglassCurves" />
+            <div className="hourglassCapTop" />
+            <div className="hourglassGlassTop" />
+            <div className="hourglassSand" />
+            <div className="hourglassSandStream" />
+            <div className="hourglassCapBottom" />
+            <div className="hourglassGlass" />
+          </div>
         </div>
-      </div>
-    </StyledWrapper>
+      </StyledWrapper>
+    </div>
   );
 };
 
 const StyledWrapper = styled.div`
   .hourglassBackground {
     position: relative;
-    background-color: rgb(71, 60, 60);
-    height: 130px;
-    width: 130px;
+    // background: linear-gradient(to right, #7e22ce, #60a5fa);
+    // background-color: rgb(71, 60, 60);
+    // background-color: rbg(1, 1, 1, 0.01);
+    background: rgba(1, 1, 1, 0.01);
+    backdrop-filter: blur(10px);
+    height: 100px;
+    width: 100px;
     border-radius: 50%;
     margin: 30px auto;
   }
 
   .hourglassContainer {
     position: absolute;
-    top: 30px;
-    left: 40px;
+    top: 15px;
+    left: 25px;
     width: 50px;
     height: 70px;
     -webkit-animation: hourglassRotate 2s ease-in 0s infinite;

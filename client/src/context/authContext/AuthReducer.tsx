@@ -4,7 +4,7 @@ export const init: Payload = {
   isAuthenticated: false,
   isLoading: true,
   token: "",
-  fullName: "",
+  name: "",
   mail: "",
   role: "",
 };
@@ -17,7 +17,7 @@ export const reducer = (state: any, action: AuthAction) => {
         ...state,
         isAuthenticated: true,
         token: action.payload.token,
-        fullName: action.payload.fullName,
+        name: action.payload.name,
         mail: action.payload.mail,
         isLoading: false,
         role: action.payload.role,

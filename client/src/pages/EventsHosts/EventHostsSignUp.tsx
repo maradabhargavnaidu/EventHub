@@ -8,6 +8,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../config/api";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import Loader from "@/components/Loader";
 type Host = {
   name: string;
   organization: string;
@@ -26,33 +28,36 @@ const EventHostSignup = () => {
     // watch,
     formState: { errors },
   } = useForm<Host>({ resolver: yupResolver(registerHostSchema) });
-
-  const onSubmit: SubmitHandler<Host> = async (form) => {
-    const { confirmPassword, ...formData } = form;
-    const updatedFormData = { ...formData, role: "host" };
-    const isValid = await FormValidator(registerHostSchema, formData);
-    if (isValid) {
-      try {
-        const { data } = await api.post(`/auth/register`, updatedFormData);
-        if (data) {
-          const { user } = data;
-          dispatch({ type: "LOGIN", payload: user });
-          toast.success(
-            "Welcome aboard! Your account has been created and you're now signed in."
-          );
-          Navigate("/dashboard");
-        }
-      } catch (error: any) {
-        toast.error(error.response.data.message);
-        console.log(error);
+  const mutation = useMutation({
+    mutationFn: async (form: Host) => {
+      const { confirmPassword, ...formData } = form;
+      const updatedFormData = { ...formData, role: "host" };
+      const { data } = await api.post(`/auth/register`, updatedFormData);
+      return data;
+    },
+    onSuccess: (data: any) => {
+      if (data) {
+        const { user } = data;
+        dispatch({ type: "LOGIN", payload: user });
+        toast.success(
+          "Welcome aboard! Your account has been created and you're now signed in."
+        );
+        Navigate("/dashboard");
       }
-    } else {
-      console.log(isValid);
-    }
+    },
+    onError: (error: any) => {
+      toast.error(error.response.data.message);
+      console.log(error);
+    },
+  });
+  const onSubmit: SubmitHandler<Host> = async (form) => {
+    const isValid = await FormValidator(registerHostSchema, form);
+    if (isValid) mutation.mutate(form);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 bg-[#1e1e1e]">
+      {mutation.isPending && <Loader />}
       <div className="absolute inset-0 bg-[#1e1e1e] bg-opacity-90 backdrop-blur-sm" />
       <div className="relative w-full max-w-lg border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">

@@ -8,46 +8,49 @@ import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../config/api";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
-
+import { useMutation } from "@tanstack/react-query";
+import Loader from "@/components/Loader";
 type Host = {
   mail: string;
   password: string;
 };
 export default function HostsLogin() {
   const { dispatch } = useAuth();
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    // watch,
     formState: { errors },
   } = useForm<Host>({ resolver: yupResolver(loginHostSchema) });
+
+  const mutation = useMutation({
+    mutationFn: (form: Host) =>
+      api.post("/auth/login", { ...form, role: "host" }),
+    onSuccess: (response) => {
+      const { user } = response.data;
+      if (user) {
+        dispatch({ type: "LOGIN", payload: user });
+        toast.success("Login successful!");
+        navigate("/dashboard");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Login failed");
+      console.error(error);
+    },
+  });
 
   const onSubmit: SubmitHandler<Host> = async (form) => {
     const isValid = await FormValidator(loginHostSchema, form);
     if (isValid) {
-      try {
-        const { data } = await api.post("/auth/login", {
-          ...form,
-          role: "host",
-        });
-        const { user } = data;
-        if (user) {
-          dispatch({ type: "LOGIN", payload: user });
-          toast.success("Login successful!");
-          Navigate("/dashboard");
-        }
-      } catch (error: any) {
-        // if(error?.status===404)
-        toast.error(error.response.data.message);
-        console.log(error);
-      }
+      mutation.mutate(form);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e] py-20 p-4">
+      {mutation.isPending && <Loader />}
       <div className="relative w-full max-w-md border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
@@ -95,6 +98,7 @@ export default function HostsLogin() {
             type="submit"
             className="w-full bg-gradient-to-r from-purple-500 to-blue-600 text-white py-2 rounded-lg hover:from-purple-600 hover:to-blue-700"
           >
+            {/* {mutation.isPending ? <Loader /> : <div>Sign In</div>} */}
             Sign In
           </button>
         </form>

@@ -15,15 +15,21 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
     if (token) {
       const giveAccess = async () => {
-        const { data } = await api.get("/auth/profile");
-        if (data) {
-          const { user }: { user: Payload } = data;
-          dispatch({ type: "LOGIN", payload: user });
-          toast.success("Login successful. Welcome!");
-          // Navigate("/dashboard");
-        } else {
+        try {
+          const { data } = await api.get("/auth/profile");
+          if (data) {
+            const { user }: { user: Payload } = data;
+            dispatch({ type: "LOGIN", payload: user });
+            toast.success("Login successful. Welcome!");
+            // Navigate("/dashboard");
+          } else {
+            dispatch({ type: "LOGOUT" });
+            toast.error("Session expired! Time to log in again.");
+          }
+        } catch (error: any) {
           dispatch({ type: "LOGOUT" });
-          toast.error("Session expired! Time to log in again.");
+          toast.error(error?.response?.data?.message);
+          console.error("giveAccess error:", error);
         }
       };
       giveAccess();

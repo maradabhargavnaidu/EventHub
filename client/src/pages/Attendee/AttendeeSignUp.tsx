@@ -8,6 +8,8 @@ import { api } from "../../config/api";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
+import Loader from "@/components/Loader";
 type Attendee = {
   name: string;
   mail: string;
@@ -25,23 +27,30 @@ const AttendeeSignUp = () => {
     formState: { errors },
   } = useForm<Attendee>({ resolver: yupResolver(registerAttendeeSchema) });
 
+  const mutation = useMutation({
+    mutationFn: async (form: Attendee) => {
+      const { confirmPassword, ...formData } = form;
+      const updatedFormData = { ...formData, role: "attendee" };
+      const { data } = await api.post(`/auth/register`, updatedFormData);
+      return data;
+    },
+    onSuccess: (data) => {
+      const { user } = data;
+      dispatch({ type: "LOGIN", payload: user });
+      toast.success("Account created successfully! Welcome aboard.");
+      Navigate("/dashboard");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Registration failed");
+      console.error(error);
+    },
+  });
+
   const onSubmit: SubmitHandler<Attendee> = async (form) => {
-    const { confirmPassword, ...formData } = form;
-    const updatedFormData = { ...formData, role: "attendee" };
-    const isValid = await FormValidator(registerAttendeeSchema, formData);
+    const isValid = await FormValidator(registerAttendeeSchema, form);
     if (isValid) {
-      try {
-        const { data } = await api.post(`/auth/register`, updatedFormData);
-        if (data) {
-          const { user } = data;
-          dispatch({ type: "LOGIN", payload: user });
-          toast.success("Account created successfully! Welcome aboard.");
-          Navigate("/dashboard");
-        }
-      } catch (error: any) {
-        toast.error(error.response.data.message);
-        console.log(error);
-      }
+      // console.log(isValid);
+      mutation.mutate(form);
     } else {
       toast.error("OOPS! some error occured");
       console.log(isValid);
@@ -50,6 +59,7 @@ const AttendeeSignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 bg-[#1e1e1e]">
+      {mutation.isPending && <Loader />}
       <div className="absolute inset-0 bg-[#1e1e1e] bg-opacity-90 backdrop-blur-sm" />
       <div className="relative w-full max-w-lg border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Loader } from "lucide-react";
 import InputField from "../../components/InputField";
 import { FormValidator } from "../../utils/FormValidator";
 import { loginAttendeeSchema } from "../../validations/Attendee";
@@ -8,6 +8,7 @@ import { api } from "../../config/api";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
 // import * as yup from "yup";
 
 type Attendee = {
@@ -15,8 +16,8 @@ type Attendee = {
   password: string;
 };
 export default function AttendeeLogin() {
-  // const [form, setForm] = useState({ mail: "", password: "" });
-
+  const { dispatch } = useAuth();
+  const Navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -24,33 +25,37 @@ export default function AttendeeLogin() {
     formState: { errors },
   } = useForm<Attendee>({ resolver: yupResolver(loginAttendeeSchema) });
 
-  const { dispatch } = useAuth();
-  const Navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: (formData: Attendee) =>
+      api.post("/auth/login", {
+        ...formData,
+        role: "attendee",
+      }),
+    onSuccess: (response) => {
+      const { user } = response.data;
+      if (user) {
+        dispatch({ type: "LOGIN", payload: user });
+        toast.success("Login successful. Welcome!");
+        Navigate("/dashboard");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message);
+      // console.log(error);
+    },
+  });
 
   const onSubmit: SubmitHandler<Attendee> = async (formData) => {
     console.log(formData);
     const isValid = await FormValidator(loginAttendeeSchema, formData);
     if (isValid) {
-      try {
-        const { data } = await api.post("/auth/login", {
-          ...formData,
-          role: "attendee",
-        });
-        const { user } = data;
-        if (user) {
-          dispatch({ type: "LOGIN", payload: user });
-          toast.success("Login successful. Welcome!");
-          Navigate("/dashboard");
-        }
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message);
-        console.log(error);
-      }
+      mutation.mutate(formData);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e] py-20 p-4">
+      {mutation.isPending && <Loader />}
       <div className="relative w-full max-w-md border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
