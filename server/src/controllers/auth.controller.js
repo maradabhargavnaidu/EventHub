@@ -89,7 +89,7 @@ const login = async (req, res) => {
 
 const Profile = async (req, res) => {
   const header = req.headers;
-  console.log(header.authorization);
+  // console.log(header);
   let token = "";
   if (header != undefined) {
     token = header.authorization;
