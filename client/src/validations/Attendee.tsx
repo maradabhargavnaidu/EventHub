@@ -28,6 +28,10 @@ export const registerAttendeeSchema = Yup.object({
       "Password must contain at least one letter and one number."
     )
     .required("Password is required."),
+  confirmPassword: Yup.string()
+    .trim()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Please confirm your password."),
 });
 
 export const loginAttendeeSchema = Yup.object({

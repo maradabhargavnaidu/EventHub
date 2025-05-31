@@ -1,15 +1,15 @@
-import Header from '../components/Header'
-import WhyChooseUs from '../components/WhyChooseUs'
-import Footer from '../components/Footer'
+import Header from "../components/home/Header";
+import WhyChooseUs from "../components/home/WhyChooseUs";
+import Footer from "../components/home/Footer";
 
 const Home = () => {
-    return (
-        <div>
-            <Header />
-            <WhyChooseUs />
-            <Footer />
-        </div>
-    )
-}
+  return (
+    <div>
+      <Header />
+      <WhyChooseUs />
+      <Footer />
+    </div>
+  );
+};
 
-export default Home
+export default Home;

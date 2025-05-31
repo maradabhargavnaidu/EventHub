@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Building2, Mail, Phone, User, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "../../components/InputField";
@@ -7,25 +7,27 @@ import { FormValidator } from "../../utils/FormValidator";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../config/api";
 import { toast } from "sonner";
-
+import { SubmitHandler, useForm } from "react-hook-form";
+type Host = {
+  name: string;
+  organization: string;
+  mail: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+};
 const EventHostSignup = () => {
   const { dispatch } = useAuth();
   const Navigate = useNavigate();
-  const [form, setForm] = useState({
-    name: "",
-    organization: "",
-    mail: "",
-    phoneNumber: "",
-    password: "",
-    confirmPassword: "",
-  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.id]: e.target.value });
-  };
+  const {
+    register,
+    handleSubmit,
+    // watch,
+    formState: { errors },
+  } = useForm<Host>({ resolver: yupResolver(registerHostSchema) });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<Host> = async (form) => {
     const { confirmPassword, ...formData } = form;
     const updatedFormData = { ...formData, role: "host" };
     const isValid = await FormValidator(registerHostSchema, formData);
@@ -65,23 +67,27 @@ const EventHostSignup = () => {
           </p>
         </div>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
           {/* <div className="grid gap-4 md:grid-cols-2"> */}
           <InputField
             id="name"
             label="Full Name"
             icon={<User />}
             placeholder="John Doe"
-            value={form.name}
-            onChange={handleChange}
+            error={errors.name?.message}
+            // value={form.name}
+            // onChange={handleChange}
+            {...register("name")}
           />
           <InputField
             id="organization"
             label="Organization"
             icon={<Building2 />}
             placeholder="Your Company Ltd."
-            value={form.organization}
-            onChange={handleChange}
+            error={errors.organization?.message}
+            {...register("organization")}
+            // value={form.organization}
+            // onChange={handleChange}
           />
           {/* </div> */}
           <InputField
@@ -89,9 +95,11 @@ const EventHostSignup = () => {
             label="Email"
             type="email"
             icon={<Mail />}
+            error={errors.mail?.message}
             placeholder="you@example.com"
-            value={form.mail}
-            onChange={handleChange}
+            {...register("mail")}
+            // value={form.mail}
+            // onChange={handleChange}
           />
           <InputField
             id="phoneNumber"
@@ -99,8 +107,10 @@ const EventHostSignup = () => {
             type="tel"
             icon={<Phone />}
             placeholder="+91 (555) 000-0000"
-            value={form.phoneNumber}
-            onChange={handleChange}
+            error={errors.phoneNumber?.message}
+            {...register("phoneNumber")}
+            // value={form.phoneNumber}
+            // onChange={handleChange}
           />
           {/* <div className="grid gap-4 md:grid-cols-2"> */}
           <InputField
@@ -108,16 +118,20 @@ const EventHostSignup = () => {
             label="Password"
             type="password"
             icon={<Lock />}
-            value={form.password}
-            onChange={handleChange}
+            {...register("password")}
+            error={errors.password?.message}
+            // value={form.password}
+            // onChange={handleChange}
           />
           <InputField
             id="confirmPassword"
             label="Confirm Password"
             type="password"
             icon={<Lock />}
-            value={form.confirmPassword}
-            onChange={handleChange}
+            {...register("confirmPassword")}
+            error={errors.confirmPassword?.message}
+            // value={form.confirmPassword}
+            // onChange={handleChange}
           />
           {/* </div> */}
 

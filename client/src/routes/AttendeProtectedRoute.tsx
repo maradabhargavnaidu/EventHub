@@ -1,11 +1,14 @@
-import { useAuth } from '../hooks/useAuth'
-import { Outlet } from 'react-router-dom';
-import Home from '../pages/Home';
+import { useAuth } from "../hooks/useAuth";
+import { Outlet, useNavigate } from "react-router-dom";
+// import Home from '../pages/Home';
 
 const AttendeProtectedRoute = () => {
-    const { state } = useAuth();
-    if (state?.isAuthenticated) return <Outlet />
-    else return <Home />
-}
+  const navigate = useNavigate();
+  const { state } = useAuth();
+  if (state?.isAuthenticated) return <Outlet />;
+  else {
+    navigate("/");
+  }
+};
 
-export default AttendeProtectedRoute
+export default AttendeProtectedRoute;

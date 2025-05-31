@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
 import InputField from "../../components/InputField";
@@ -7,18 +7,24 @@ import { FormValidator } from "../../utils/FormValidator";
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../config/api";
 import { toast } from "sonner";
+import { SubmitHandler, useForm } from "react-hook-form";
 
+type Host = {
+  mail: string;
+  password: string;
+};
 export default function HostsLogin() {
   const { dispatch } = useAuth();
   const Navigate = useNavigate();
 
-  const [form, setForm] = useState({ mail: "", password: "" });
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.id]: e.target.value });
-  };
+  const {
+    register,
+    handleSubmit,
+    // watch,
+    formState: { errors },
+  } = useForm<Host>({ resolver: yupResolver(loginHostSchema) });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<Host> = async (form) => {
     const isValid = await FormValidator(loginHostSchema, form);
     if (isValid) {
       try {
@@ -51,15 +57,15 @@ export default function HostsLogin() {
           <p className="text-zinc-400">Sign in to your event host account</p>
         </div>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <InputField
             id="mail"
             label="Email"
             type="email"
             icon={<Mail />}
             placeholder="you@example.com"
-            value={form.mail}
-            onChange={handleChange}
+            error={errors.mail?.message}
+            {...register("mail")}
           />
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -78,8 +84,10 @@ export default function HostsLogin() {
               label=""
               type="password"
               icon={<Lock />}
-              value={form.password}
-              onChange={handleChange}
+              error={errors.password?.message}
+              // value={form.password}
+              {...register("password")}
+              // onChange={handleChange}
             />
           </div>
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+// import Sidebar from "";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -26,7 +26,7 @@ const ViewDetails = () => {
   }, []);
   return (
     <div className="h-screen bg-[#1e1e1e] text-white pt-14 mx-auto px-5">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="flex-1 p-6 overflow-auto">
         <div className="max-w-7xl mx-auto">{id}</div>
       </div>

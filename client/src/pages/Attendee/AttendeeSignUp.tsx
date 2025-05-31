@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Mail, Phone, User, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerAttendeeSchema } from "../../validations/Attendee";
@@ -7,27 +6,26 @@ import { FormValidator } from "../../utils/FormValidator";
 import InputField from "../../components/InputField";
 import { api } from "../../config/api";
 import { toast } from "sonner";
-
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+type Attendee = {
+  name: string;
+  mail: string;
+  phoneNumber: string;
+  password: string;
+  confirmPassword: string;
+};
 const AttendeeSignUp = () => {
   const { dispatch } = useAuth();
   const Navigate = useNavigate();
-  const [form, setForm] = useState({
-    name: "",
-    mail: "",
-    phoneNumber: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const {
+    register,
+    handleSubmit,
+    // watch,
+    formState: { errors },
+  } = useForm<Attendee>({ resolver: yupResolver(registerAttendeeSchema) });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setForm({ ...form, [id]: value });
-    setErrors((prevErrors) => ({ ...prevErrors, [id]: "" }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<Attendee> = async (form) => {
     const { confirmPassword, ...formData } = form;
     const updatedFormData = { ...formData, role: "attendee" };
     const isValid = await FormValidator(registerAttendeeSchema, formData);
@@ -66,15 +64,15 @@ const AttendeeSignUp = () => {
           </p>
         </div>
 
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <InputField
             id="name"
             label="Full Name"
             icon={<User />}
             placeholder="John Doe"
-            value={form.name}
-            onChange={handleChange}
-            error={errors.fullName}
+            // value={form.name}
+            {...register("name")}
+            error={errors.name?.message}
           />
           <InputField
             id="mail"
@@ -82,9 +80,9 @@ const AttendeeSignUp = () => {
             type="email"
             icon={<Mail />}
             placeholder="you@example.com"
-            value={form.mail}
-            onChange={handleChange}
-            error={errors.mail}
+            // value={form.mail}
+            {...register("mail")}
+            error={errors.mail?.message}
           />
           <InputField
             id="phoneNumber"
@@ -92,27 +90,27 @@ const AttendeeSignUp = () => {
             type="tel"
             icon={<Phone />}
             placeholder="9876543210"
-            value={form.phoneNumber}
-            onChange={handleChange}
-            error={errors.phoneNumber}
+            // value={form.phoneNumber}
+            {...register("phoneNumber")}
+            error={errors.phoneNumber?.message}
           />
           <InputField
             id="password"
             label="Password"
             type="password"
             icon={<Lock />}
-            value={form.password}
-            onChange={handleChange}
-            error={errors.password}
+            // value={form.password}
+            {...register("password")}
+            error={errors.password?.message}
           />
           <InputField
             id="confirmPassword"
             label="Confirm Password"
             type="password"
             icon={<Lock />}
-            value={form.confirmPassword}
-            onChange={handleChange}
-            error={errors.confirmPassword}
+            // value={form.confirmPassword}
+            {...register("confirmPassword")}
+            error={errors.confirmPassword?.message}
           />
 
           <button
