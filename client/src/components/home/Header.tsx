@@ -89,7 +89,7 @@ const Header = () => {
 
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col  gap-4 justify-center items-center"
           >
             {state?.isAuthenticated ? (
               <Link
@@ -108,14 +108,20 @@ const Header = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             )}
+            <div className="mx-auto max-w-3xl rounded-2xl bg-white/5 backdrop-blur-3xl px-6 py-3 shadow-lg ring-1 ring-white/20">
+              <p className="text-center text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                🚧 EventHub is in <span className="underline">Beta</span> —
+                we're polishing things up for the best experience!
+              </p>
+            </div>
 
-            <Link
+            {/* <Link
               to="/learn-more"
               className="flex items-center gap-2 text-gray-300 hover:text-white font-medium py-4 px-8 rounded-full transition-colors"
             >
               Learn more
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </Link> */}
           </motion.div>
 
           <motion.div

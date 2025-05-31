@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Menu, X, Calendar } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import Image from "../../assets/faviImage.png";
 // import DropDown from "./DropDown";
 
 const Navbar = () => {
@@ -28,7 +29,8 @@ const Navbar = () => {
             to="/"
             className="flex items-center space-x-2 text-gray-200 hover:text-white transition-colors"
           >
-            <Calendar className="w-6 h-6 text-purple-400" />
+            {/* <Calendar className="w-6 h-6 text-purple-400" /> */}
+            <img src={Image} width={40} height={40} />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
               EventHub
             </span>
