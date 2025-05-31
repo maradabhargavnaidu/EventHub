@@ -17,13 +17,17 @@ import {
   User,
   Mail,
   Phone,
-  DollarSign,
   Plus,
   X,
   Globe,
   Building,
+  UserCircle,
+  BadgeIndianRupee,
 } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { eventSchema } from "@/validations/Events";
 
 interface InputFieldProps {
   id: string;
@@ -51,7 +55,7 @@ function InputField({
   return (
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-200">
-        {label} {required && <span className="text-red-400">*</span>}
+        {label} {required && <span className="text-red-400 text-xl">*</span>}
       </Label>
       <div className="relative">
         {icon && (
@@ -86,35 +90,46 @@ function InputField({
     </div>
   );
 }
+export interface TicketType {
+  ticketName: string;
+  price: number;
+  quantity: number;
+}
+
+export interface EventFormData {
+  title: string;
+  description: string;
+  startDateTime: string;
+  endDateTime: string;
+
+  type: "online" | "physical" | "hybrid";
+
+  venueName?: string;
+  address?: string;
+  onlineLink?: string;
+
+  hostName: string;
+  contactEmail: string;
+  contactPhone?: string;
+
+  isPaidEvent: boolean;
+
+  tickets: TicketType[]; // now it's an array
+}
 
 export default function EventForm() {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    startDateTime: "",
-    endDateTime: "",
-    locationType: "physical",
-    venue: "",
-    address: "",
-    onlineLink: "",
-    hostName: "",
-    contactEmail: "",
-    contactPhone: "",
-    isPaid: false,
-    ticketPrice: "",
-    maxAttendees: "",
-    registrationRequired: true,
+  const {
+    register,
+    // handleSubmit,
+    // formState: { errors },
+    watch,
+  } = useForm({
+    resolver: yupResolver(eventSchema),
   });
-
+  const locationType = watch("type");
   const [tickets, setTickets] = useState([
     { id: 1, name: "General Admission", price: "0", quantity: "100" },
   ]);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
 
   const addTicketType = () => {
     const newTicket = {
@@ -138,15 +153,6 @@ export default function EventForm() {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    console.log("Form submitted:", { ...formData, tickets });
-    setIsSubmitting(false);
-  };
-
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-gray-100">
       <div className="container mx-auto p-6 ">
@@ -158,24 +164,12 @@ export default function EventForm() {
           </div>
           <UserProfileSnapshot />
         </div>
-        {/* <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Create Event</h1>
-              <p className="text-gray-400 text-sm">
-                Fill in the details to create your event
-              </p>
-            </div>
-          </div>
-          <UserProfileSnapshot />
-        </div> */}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Details */}
+        <form className="space-y-8">
           <Card className="bg-[#2a2a2a] border-gray-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-blue-500" />
+                <Calendar className="w-5 h-5 text-white " />
                 Basic Details
               </CardTitle>
             </CardHeader>
@@ -186,8 +180,7 @@ export default function EventForm() {
                 type="text"
                 placeholder="Enter your event title"
                 required
-                value={formData.title}
-                onChange={(e) => handleInputChange("title", e.target.value)}
+                {...register("title")}
               />
               <InputField
                 id="description"
@@ -195,19 +188,15 @@ export default function EventForm() {
                 type="textarea"
                 placeholder="Describe your event in detail..."
                 required
-                value={formData.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
+                {...register("description")}
               />
             </CardContent>
           </Card>
 
-          {/* Date & Time */}
           <Card className="bg-[#2a2a2a] border-gray-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Clock className="w-5 h-5 text-green-500" />
+                <Clock className="w-5 h-5 text-white" />
                 Date & Time
               </CardTitle>
             </CardHeader>
@@ -218,47 +207,38 @@ export default function EventForm() {
                   label="Start Date & Time"
                   type="datetime-local"
                   required
-                  value={formData.startDateTime}
-                  onChange={(e) =>
-                    handleInputChange("startDateTime", e.target.value)
-                  }
+                  {...register("startDateTime")}
                 />
                 <InputField
                   id="endDateTime"
                   label="End Date & Time"
                   type="datetime-local"
                   required
-                  value={formData.endDateTime}
-                  onChange={(e) =>
-                    handleInputChange("endDateTime", e.target.value)
-                  }
+                  {...register("endDateTime")}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Location */}
           <Card className="bg-[#2a2a2a] border-gray-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-red-500" />
+                <MapPin className="w-5 h-5 text-white" />
                 Location
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
                 <Label className="text-sm font-medium text-gray-200 mb-3 block">
-                  Event Type <span className="text-red-400">*</span>
+                  Event Type <span className="text-red-400 text-xl">*</span>
                 </Label>
-                <RadioGroup
-                  value={formData.locationType}
-                  onValueChange={(value) =>
-                    handleInputChange("locationType", value)
-                  }
-                  className="space-y-3"
-                >
-                  <div className="flex items-center space-x-3 p-3 rounded-lg bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem value="physical" id="physical" />
+                <RadioGroup className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
+                    <RadioGroupItem
+                      value="physical"
+                      id="physical"
+                      {...register("type")}
+                    />
                     <Label
                       htmlFor="physical"
                       className="flex items-center gap-2 cursor-pointer"
@@ -267,8 +247,12 @@ export default function EventForm() {
                       Physical Location
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem value="online" id="online" />
+                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
+                    <RadioGroupItem
+                      value="online"
+                      id="online"
+                      {...register("type")}
+                    />
                     <Label
                       htmlFor="online"
                       className="flex items-center gap-2 cursor-pointer"
@@ -277,8 +261,12 @@ export default function EventForm() {
                       Online Event
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem value="hybrid" id="hybrid" />
+                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
+                    <RadioGroupItem
+                      value="hybrid"
+                      id="hybrid"
+                      {...register("type")}
+                    />
                     <Label
                       htmlFor="hybrid"
                       className="flex items-center gap-2 cursor-pointer"
@@ -290,8 +278,7 @@ export default function EventForm() {
                 </RadioGroup>
               </div>
 
-              {(formData.locationType === "physical" ||
-                formData.locationType === "hybrid") && (
+              {(locationType === "physical" || locationType === "hybrid") && (
                 <div className="space-y-4">
                   <InputField
                     id="venue"
@@ -300,8 +287,7 @@ export default function EventForm() {
                     placeholder="Enter venue name"
                     icon={<Building className="w-4 h-4" />}
                     required
-                    value={formData.venue}
-                    onChange={(e) => handleInputChange("venue", e.target.value)}
+                    {...register("venueName")}
                   />
                   <InputField
                     id="address"
@@ -310,16 +296,12 @@ export default function EventForm() {
                     placeholder="Enter full address"
                     icon={<MapPin className="w-4 h-4" />}
                     required
-                    value={formData.address}
-                    onChange={(e) =>
-                      handleInputChange("address", e.target.value)
-                    }
+                    {...register("address")}
                   />
                 </div>
               )}
 
-              {(formData.locationType === "online" ||
-                formData.locationType === "hybrid") && (
+              {(locationType === "online" || locationType === "hybrid") && (
                 <InputField
                   id="onlineLink"
                   label="Online Meeting Link"
@@ -327,20 +309,16 @@ export default function EventForm() {
                   placeholder="https://zoom.us/j/..."
                   icon={<Globe className="w-4 h-4" />}
                   required
-                  value={formData.onlineLink}
-                  onChange={(e) =>
-                    handleInputChange("onlineLink", e.target.value)
-                  }
+                  {...register("onlineLink")}
                 />
               )}
             </CardContent>
           </Card>
 
-          {/* Host Information */}
           <Card className="bg-[#2a2a2a] border-gray-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-purple-500" />
+                <UserCircle className="w-5 h-5 text-white" />
                 Host Information
               </CardTitle>
             </CardHeader>
@@ -353,10 +331,7 @@ export default function EventForm() {
                   placeholder="Your name or organization"
                   icon={<User className="w-4 h-4" />}
                   required
-                  value={formData.hostName}
-                  onChange={(e) =>
-                    handleInputChange("hostName", e.target.value)
-                  }
+                  {...register("hostName")}
                 />
                 <InputField
                   id="contactEmail"
@@ -365,10 +340,7 @@ export default function EventForm() {
                   placeholder="contact@example.com"
                   icon={<Mail className="w-4 h-4" />}
                   required
-                  value={formData.contactEmail}
-                  onChange={(e) =>
-                    handleInputChange("contactEmail", e.target.value)
-                  }
+                  {...register("contactEmail")}
                 />
               </div>
               <div className="mt-6">
@@ -378,63 +350,17 @@ export default function EventForm() {
                   type="tel"
                   placeholder="+1 (555) 123-4567"
                   icon={<Phone className="w-4 h-4" />}
-                  value={formData.contactPhone}
-                  onChange={(e) =>
-                    handleInputChange("contactPhone", e.target.value)
-                  }
+                  {...register("contactPhone")}
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Registration Settings */}
           <Card className="bg-[#2a2a2a] border-gray-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <User className="w-5 h-5 text-orange-500" />
-                Registration Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-[#1e1e1e] rounded-lg border border-gray-600">
-                <div>
-                  <Label className="text-sm font-medium text-gray-200">
-                    Require Registration
-                  </Label>
-                  <p className="text-xs text-gray-400">
-                    Attendees must register to join the event
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.registrationRequired}
-                  onCheckedChange={(checked) =>
-                    handleInputChange(
-                      "registrationRequired",
-                      checked.toString()
-                    )
-                  }
-                />
-              </div>
-
-              <InputField
-                id="maxAttendees"
-                label="Maximum Attendees"
-                type="number"
-                placeholder="100"
-                value={formData.maxAttendees}
-                onChange={(e) =>
-                  handleInputChange("maxAttendees", e.target.value)
-                }
-              />
-            </CardContent>
-          </Card>
-
-          {/* Ticketing / Pricing */}
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-yellow-500" />
-                Ticketing & Pricing
+                <BadgeIndianRupee className="w-5 h-5 text-white-500" />
+                <div>Ticketing & Pricing</div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -448,10 +374,7 @@ export default function EventForm() {
                   </p>
                 </div>
                 <Switch
-                  checked={formData.isPaid}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("isPaid", checked.toString())
-                  }
+                // checked={formData.isPaid}
                 />
               </div>
 
@@ -523,7 +446,7 @@ export default function EventForm() {
                             updateTicket(ticket.id, "price", e.target.value)
                           }
                           className="bg-[#2a2a2a] border-gray-600 text-gray-100 mt-1"
-                          disabled={!formData.isPaid}
+                          // disabled={!formData.isPaid}
                         />
                       </div>
                       <div>
@@ -546,9 +469,7 @@ export default function EventForm() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Submit Buttons */}
-          <div className="flex justify-end gap-4 sticky bottom-0 bg-[#1e1e1e] p-6 rounded-lg shadow-lg border border-gray-700">
+          <div className="flex justify-center gap-2 bottom-0 bg-[#1e1e1e] p-5 rounded-lg shadow-lg border border-white">
             <Button
               type="button"
               variant="outline"
@@ -559,17 +480,10 @@ export default function EventForm() {
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+              // disabled={isSubmitting}
+              className="inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 hover:scale-105"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating...
-                </>
-              ) : (
-                "Create Event"
-              )}
+              Create Event
             </Button>
           </div>
         </form>

@@ -113,6 +113,28 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+input[type="date"],
+input[type="datetime-local"] {
+  background-color: #1e1e1e;
+  color: white;
+  border: 1px solid #444;
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 1rem; /* increased font size */
+  /* width: 250px; */
+
+  /* Force icon color (WebKit only) */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Inverts black icon to white */
+  cursor: pointer;
+  transform: scale(1.5); /* enlarge the calendar icon */
+  transform-origin: center center;
+}
 
 @layer base {
   * {
