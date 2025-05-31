@@ -21,7 +21,7 @@ const items = [
   },
   {
     title: "Create Events",
-    url: "/create-event",
+    url: "/create",
     icon: CalendarPlus,
   },
 ];

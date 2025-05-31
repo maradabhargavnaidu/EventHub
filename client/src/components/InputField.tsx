@@ -5,7 +5,7 @@ type InputFieldProps = {
   label?: string;
   type?: string;
   placeholder?: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   error?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -28,7 +28,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
           placeholder={placeholder}
           className={`w-full pl-9 bg-zinc-800/50 border ${
             error ? "border-red-500" : "border-zinc-700"
-          } text-white placeholder:text-zinc-500 focus:border-purple-500 focus:ring-purple-500 rounded-lg py-2 px-3`}
+          } text-white placeholder:text-zinc-500 focus:border-purple-500 focus:ring-purple-500 rounded-lg py-2 mb-4 px-3`}
           {...rest} // <-- Spread register props
         />
       </div>

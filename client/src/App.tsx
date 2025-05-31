@@ -19,7 +19,7 @@ const GetStarted = lazy(() => import("./pages/GetStarted"));
 const AttendeProtectedRoute = lazy(
   () => import("./routes/AttendeProtectedRoute")
 );
-const CreateEvent = lazy(() => import("./pages/Dashboard/CreateEvent"));
+const EventForm = lazy(() => import("./pages/Dashboard/EventForm"));
 const ViewDetails = lazy(() => import("./pages/Dashboard/ViewDetails"));
 const Layout = lazy(() => import("./layout/layout"));
 
@@ -51,7 +51,7 @@ const App = () => {
             <Route element={<AttendeProtectedRoute />}>
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/create" element={<CreateEvent />} />
+                <Route path="/create" element={<EventForm />} />
                 <Route path="/view-event/:id" element={<ViewDetails />} />
               </Route>
             </Route>
