@@ -6,7 +6,7 @@ const StatisticsOverview = ({ events }: { events: any[] }) => {
   const stats = [
     {
       title: "Total Events",
-      value: events.length,
+      value: events?.length,
       icon: Calendar,
       change: "+3",
     },

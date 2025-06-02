@@ -199,7 +199,6 @@ export default function YourEvents() {
                         format(endDate, "yyyy-MM-dd");
 
                       if (isSameDay) {
-                        // Same day event - show date once with time range
                         return (
                           <div className="flex items-center text-sm">
                             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-400/20 mr-3">
