@@ -1,20 +1,5 @@
 const Joi = require("joi");
 
-const ticketSchema = Joi.object({
-  ticketName: Joi.string().required().messages({
-    "string.empty": "Ticket name is required",
-  }),
-  price: Joi.number().positive().required().messages({
-    "number.base": "Price must be a number",
-    "number.positive": "Price must be greater than 0",
-  }),
-  quantity: Joi.number().integer().min(1).required().messages({
-    "number.base": "Quantity must be a number",
-    "number.integer": "Quantity must be an integer",
-    "number.min": "Quantity must be at least 1",
-  }),
-});
-
 const eventSchema = Joi.object({
   title: Joi.string().required().messages({
     "string.empty": "Event title is required",
@@ -28,12 +13,10 @@ const eventSchema = Joi.object({
   endDateTime: Joi.string().required().messages({
     "string.empty": "End date & time is required",
   }),
-
   type: Joi.string().valid("online", "physical", "hybrid").required().messages({
     "any.only": "Invalid event type",
     "string.empty": "Event type is required",
   }),
-
   venueName: Joi.when("type", {
     is: Joi.valid("physical", "hybrid"),
     then: Joi.string().required().messages({
@@ -56,7 +39,6 @@ const eventSchema = Joi.object({
     }),
     otherwise: Joi.forbidden(),
   }),
-
   hostName: Joi.string().required().messages({
     "string.empty": "Host name is required",
   }),
@@ -65,13 +47,15 @@ const eventSchema = Joi.object({
     "string.empty": "Contact email is required",
   }),
   contactPhone: Joi.string().allow(null, ""),
-
   isPaidEvent: Joi.boolean().required(),
-
-  tickets: Joi.array().items(ticketSchema).min(1).required().messages({
-    "array.base": "Tickets must be an array",
-    "array.min": "At least one ticket type is required",
+  price: Joi.number().positive().required().messages({
+    "number.base": "Price must be a number",
+    "number.positive": "Price must be greater than 0",
+  }),
+  quantity: Joi.number().integer().min(1).required().messages({
+    "number.base": "Quantity must be a number",
+    "number.integer": "Quantity must be an integer",
+    "number.min": "Quantity must be at least 1",
   }),
 });
-
-module.exports = eventSchema;
+module.exports = { eventSchema };
