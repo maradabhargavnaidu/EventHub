@@ -1,39 +1,39 @@
-import React from "react";
 import { Calendar, MapPin, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Mock data for events
-const eventsMockData = [
-  {
-    id: 1,
-    name: "Tech Conference 2025",
-    date: "May 15, 2025",
-    location: "San Francisco Convention Center",
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    name: "Product Launch Webinar",
-    date: "April 10, 2025",
-    location: "Virtual Event",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Annual Developers Meetup",
-    date: "June 22, 2025",
-    location: "New York Tech Hub",
-    status: "upcoming",
-  },
-  {
-    id: 4,
-    name: "UI/UX Workshop Series",
-    date: "April 5, 2025",
-    location: "Chicago Design Center",
-    status: "cancelled",
-  },
-];
+// const eventsMockData = [
+//   {
+//     id: 1,
+//     name: "Tech Conference 2025",
+//     date: "May 15, 2025",
+//     location: "San Francisco Convention Center",
+//     status: "upcoming",
+//   },
+//   {
+//     id: 2,
+//     name: "Product Launch Webinar",
+//     date: "April 10, 2025",
+//     location: "Virtual Event",
+//     status: "active",
+//   },
+//   {
+//     id: 3,
+//     name: "Annual Developers Meetup",
+//     date: "June 22, 2025",
+//     location: "New York Tech Hub",
+//     status: "upcoming",
+//   },
+//   {
+//     id: 4,
+//     name: "UI/UX Workshop Series",
+//     date: "April 5, 2025",
+//     location: "Chicago Design Center",
+//     status: "cancelled",
+//   },
+// ];
 
-const UpcomingEvents: React.FC = () => {
+const UpcomingEvents = ({ events }: { events: any[] }) => {
   // Helper function to get status badge style
   const getStatusBadgeStyle = (status: string) => {
     switch (status) {
@@ -52,14 +52,17 @@ const UpcomingEvents: React.FC = () => {
     <div className="bg-[#252525] rounded-lg p-5 shadow-md transition-all duration-300 hover:shadow-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Upcoming Events</h2>
-        <button className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 transition-colors text-white px-3 py-1.5 rounded-md text-sm">
+        <Link
+          to={"/create"}
+          className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 transition-colors text-white px-3 py-1.5 rounded-md text-sm"
+        >
           <Plus size={16} />
           <span>Create Event</span>
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        {eventsMockData.map((event) => (
+        {events.map((event) => (
           <div
             key={event.id}
             className="bg-[#2d2d2d] rounded-lg p-4 border border-gray-700 transition-all duration-300 hover:border-gray-500 cursor-pointer"

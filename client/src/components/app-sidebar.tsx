@@ -1,4 +1,9 @@
-import { Calendar, CalendarPlus, LayoutDashboard } from "lucide-react";
+import {
+  Calendar,
+  Calendar1,
+  CalendarPlus,
+  LayoutDashboard,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -24,6 +29,11 @@ const items = [
     url: "/create",
     icon: CalendarPlus,
   },
+  {
+    title: "Your Events",
+    url: "/your-events",
+    icon: Calendar1,
+  },
 ];
 
 export function AppSidebar() {
@@ -32,7 +42,7 @@ export function AppSidebar() {
       <SidebarHeader className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
         <SidebarMenu>
           <SidebarMenuButton className="hover:bg-[#1e1e1e]/2">
-            <SidebarMenuItem>
+            <SidebarMenuItem className="">
               <Link to="/" className="flex items-center justify-between gap-2">
                 <Calendar className="w-5 h-5 text-purple-400" />
                 <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
@@ -52,8 +62,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="text-blue-400" />
+                      <span className="font-medium ">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

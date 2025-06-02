@@ -13,7 +13,7 @@ export const eventSchema = Yup.object().shape({
     .typeError("Must be a valid date"),
 
   type: Yup.string()
-    .oneOf(["online", "physical", "hybrid"])
+    .oneOf(["online", "physical", "hybrid", undefined])
     .required("Event type is required"),
 
   venueName: Yup.string().when("type", {
@@ -41,21 +41,22 @@ export const eventSchema = Yup.object().shape({
 
   isPaidEvent: Yup.boolean().required(),
 
-  tickets: Yup.array()
-    .of(
-      Yup.object().shape({
-        ticketName: Yup.string().required("Ticket name is required"),
-        price: Yup.number()
-          .typeError("Price must be a number")
-          .positive("Price must be greater than 0")
-          .required("Price is required"),
-        quantity: Yup.number()
-          .typeError("Quantity must be a number")
-          .integer("Must be an integer")
-          .min(1, "Quantity must be at least 1")
-          .required("Quantity is required"),
-      })
-    )
-    .min(1, "At least one ticket type is required")
-    .required("Tickets are required"),
+  price: Yup.number()
+    .typeError("Price must be a number")
+    .positive("Price must be greater than 0")
+    .when("isPaidEvent", {
+      is: true,
+      then: (schema) => schema.required("Price is required for paid events"),
+      otherwise: (schema) => schema.notRequired().nullable(),
+    }),
+
+  quantity: Yup.number()
+    .typeError("Quantity must be a number")
+    .integer("Quantity must be an integer")
+    .min(1, "Quantity must be at least 1")
+    .when("isPaidEvent", {
+      is: true,
+      then: (schema) => schema.required("Quantity is required for paid events"),
+      otherwise: (schema) => schema.notRequired().nullable(),
+    }),
 });

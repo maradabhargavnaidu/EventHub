@@ -6,6 +6,7 @@ import AuthProvider from "./context/authContext/AuthContext";
 import Loader from "./components/Loader";
 import Navbar from "./components/home/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import YourEvents from "./pages/Dashboard/YourEvent";
 const Home = lazy(() => import("./pages/Home"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const EventHostsSignUp = lazy(
@@ -28,7 +29,12 @@ const queryClient = new QueryClient({});
 const App = () => {
   const location = useLocation();
 
-  const hideNavbarRoutes = ["/dashboard", "/create", /^\/view-event\/.+/];
+  const hideNavbarRoutes = [
+    "/dashboard",
+    "/create",
+    /^\/view-event\/.+/,
+    "/your-events",
+  ];
 
   const shouldHideNavbar = hideNavbarRoutes.some((route) =>
     route instanceof RegExp
@@ -53,6 +59,7 @@ const App = () => {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/create" element={<EventForm />} />
                 <Route path="/view-event/:id" element={<ViewDetails />} />
+                <Route path="/your-events" element={<YourEvents />} />
               </Route>
             </Route>
           </Routes>

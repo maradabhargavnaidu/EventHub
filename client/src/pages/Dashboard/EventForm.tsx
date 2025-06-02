@@ -1,108 +1,41 @@
-import type React from "react";
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import UserProfileSnapshot from "@/components/dashboard/UserProfileSnapShot";
+
 import {
-  Calendar,
-  Clock,
   MapPin,
   User,
   Mail,
   Phone,
-  Plus,
-  X,
   Globe,
   Building,
-  UserCircle,
-  BadgeIndianRupee,
+  IndianRupee,
+  Sparkles,
+  Loader,
+  Tag,
 } from "lucide-react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import InputField from "@/components/InputField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { eventSchema } from "@/validations/Events";
+import { FormValidator } from "@/utils/FormValidator";
+import { useNavigate } from "react-router-dom";
+import { api } from "@/config/api";
+import DashboardNav from "./DashboardNav";
 
-interface InputFieldProps {
-  id: string;
-  label: string;
-  type: string;
-  placeholder?: string;
-  icon?: React.ReactNode;
-  required?: boolean;
-  value?: string;
-  onChange?: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-}
-
-function InputField({
-  id,
-  label,
-  type,
-  placeholder,
-  icon,
-  required,
-  value,
-  onChange,
-}: InputFieldProps) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm font-medium text-gray-200">
-        {label} {required && <span className="text-red-400 text-xl">*</span>}
-      </Label>
-      <div className="relative">
-        {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            {icon}
-          </div>
-        )}
-        {type === "textarea" ? (
-          <Textarea
-            id={id}
-            placeholder={placeholder}
-            className={`bg-[#2a2a2a] border-gray-600 text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 ${
-              icon ? "pl-10" : ""
-            }`}
-            rows={4}
-            value={value}
-            onChange={onChange}
-          />
-        ) : (
-          <Input
-            id={id}
-            type={type}
-            placeholder={placeholder}
-            className={`bg-[#2a2a2a] border-gray-600 text-gray-100 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 ${
-              icon ? "pl-10" : ""
-            }`}
-            value={value}
-            onChange={onChange}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-export interface TicketType {
-  ticketName: string;
-  price: number;
-  quantity: number;
-}
-
-export interface EventFormData {
+export type EventFormData = {
   title: string;
   description: string;
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Date;
+  endDateTime: Date;
 
-  type: "online" | "physical" | "hybrid";
+  type: "online" | "physical" | "hybrid" | undefined;
 
   venueName?: string;
   address?: string;
@@ -114,216 +47,228 @@ export interface EventFormData {
 
   isPaidEvent: boolean;
 
-  tickets: TicketType[]; // now it's an array
-}
+  price?: number;
+  quantity?: number;
+};
 
 export default function EventForm() {
+  const Navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     register,
-    // handleSubmit,
-    // formState: { errors },
+    handleSubmit,
     watch,
-  } = useForm({
-    resolver: yupResolver(eventSchema),
-  });
+    control,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(eventSchema) });
+
   const locationType = watch("type");
-  const [tickets, setTickets] = useState([
-    { id: 1, name: "General Admission", price: "0", quantity: "100" },
-  ]);
+  const mutation = useMutation({
+    mutationFn: async (form: EventFormData) => {
+      const response = await api.post("/events/create-event", form);
+      return response.data;
+    },
+    onSuccess: (data: any) => {
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ["events"] });
+        Navigate("/dashboard");
+      }
+      toast.success("Event created successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+      console.log(error);
+    },
+  });
 
-  const addTicketType = () => {
-    const newTicket = {
-      id: Date.now(),
-      name: "",
-      price: "0",
-      quantity: "50",
-    };
-    setTickets([...tickets, newTicket]);
-  };
-
-  const removeTicketType = (id: number) => {
-    setTickets(tickets.filter((ticket) => ticket.id !== id));
-  };
-
-  const updateTicket = (id: number, field: string, value: string) => {
-    setTickets(
-      tickets.map((ticket) =>
-        ticket.id === id ? { ...ticket, [field]: value } : ticket
-      )
-    );
+  const onSubmit: SubmitHandler<EventFormData> = async (form) => {
+    const isValid = await FormValidator(eventSchema, form);
+    // console.log(form);
+    if (isValid) {
+      mutation.mutate(form);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-gray-100">
-      <div className="container mx-auto p-6 ">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-5">
-            <SidebarTrigger className="cursor-pointer" />
-            <h3 className="text-xl font-bold">Create Event</h3>
+      <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
+        {mutation.isPending && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-[#1e1e1e]/90 backdrop-blur-md border border-white/10 rounded-xl p-6 flex items-center gap-3">
+              <Loader className="w-6 h-6 animate-spin text-purple-400" />
+              <span className="text-white">Creating your event...</span>
+            </div>
           </div>
-          <UserProfileSnapshot />
-        </div>
+        )}
 
-        <form className="space-y-8">
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-white " />
-                Basic Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <InputField
-                id="title"
-                label="Event Title"
-                type="text"
-                placeholder="Enter your event title"
-                required
-                {...register("title")}
-              />
-              <InputField
-                id="description"
-                label="Event Description"
-                type="textarea"
-                placeholder="Describe your event in detail..."
-                required
-                {...register("description")}
-              />
-            </CardContent>
-          </Card>
+        {/* Header */}
+        <DashboardNav title="CreateEvent" />
 
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Clock className="w-5 h-5 text-white" />
-                Date & Time
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Main Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className=" backdrop-blur-xl bg-[#252525]  transition-all duration-300 hover:shadow-lg  rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {/* Event Title */}
+              <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                <InputField
+                  id="title"
+                  label="Event Title"
+                  type="text"
+                  placeholder="Enter your amazing event title"
+                  required={true}
+                  error={errors.title?.message}
+                  icon={<Sparkles className="w-4 h-4" />}
+                  {...register("title")}
+                />
+              </div>
+
+              {/* Event Description */}
+              <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                <InputField
+                  id="description"
+                  label="Event Description"
+                  type="textarea"
+                  placeholder="Describe your event in detail... What makes it special?"
+                  required
+                  error={errors.description?.message}
+                  {...register("description")}
+                />
+              </div>
+
+              {/* Date & Time */}
+              <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
                 <InputField
                   id="startDateTime"
                   label="Start Date & Time"
                   type="datetime-local"
                   required
+                  error={errors.startDateTime?.message}
+                  // icon={<Calendar className="w-4 h-4" />}
                   {...register("startDateTime")}
                 />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
                 <InputField
                   id="endDateTime"
                   label="End Date & Time"
                   type="datetime-local"
                   required
+                  error={errors?.endDateTime?.message}
+                  // icon={<Clock className="w-4 h-4" />}
                   {...register("endDateTime")}
                 />
               </div>
-            </CardContent>
-          </Card>
 
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-white" />
-                Location
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label className="text-sm font-medium text-gray-200 mb-3 block">
-                  Event Type <span className="text-red-400 text-xl">*</span>
+              {/* Event Type */}
+              <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                <Label className="text-sm text-zinc-300 block mb-4  items-center gap-2">
+                  {/* <MapPin className="w-4 h-4 text-white-400" /> */}
+                  Event Type <span className="text-red-400">*</span>
                 </Label>
-                <RadioGroup className="space-y-3">
-                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem
-                      value="physical"
-                      id="physical"
-                      {...register("type")}
-                    />
-                    <Label
-                      htmlFor="physical"
-                      className="flex items-center gap-2 cursor-pointer"
+                <Controller
+                  control={control}
+                  name="type"
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4"
                     >
-                      <Building className="w-4 h-4" />
-                      Physical Location
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem
-                      value="online"
-                      id="online"
-                      {...register("type")}
-                    />
-                    <Label
-                      htmlFor="online"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <Globe className="w-4 h-4" />
-                      Online Event
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-3 p-3 rounded-lg text-white bg-[#1e1e1e] border border-gray-600">
-                    <RadioGroupItem
-                      value="hybrid"
-                      id="hybrid"
-                      {...register("type")}
-                    />
-                    <Label
-                      htmlFor="hybrid"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <MapPin className="w-4 h-4" />
-                      Hybrid (Physical + Online)
-                    </Label>
-                  </div>
-                </RadioGroup>
+                      <div className="relative">
+                        <RadioGroupItem
+                          value="physical"
+                          id="physical"
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor="physical"
+                          className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl bg-zinc-800/50 backdrop-blur-md border border-white/10 cursor-pointer transition-all duration-200 peer-checked:border-purple-400/50 peer-checked:bg-purple-400/10 hover:border-purple-400/30 hover:bg-purple-400/5 text-sm sm:text-base"
+                        >
+                          {/* <Building className="w-4 h-4 sm:w-5 sm:h-5 text-white-400" /> */}
+                          <span className="font-medium ">Physical</span>
+                        </Label>
+                      </div>
+                      <div className="relative">
+                        <RadioGroupItem
+                          value="online"
+                          id="online"
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor="online"
+                          className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl bg-zinc-800/50 backdrop-blur-md border border-white/10 cursor-pointer transition-all duration-200 peer-checked:border-purple-400/50 peer-checked:bg-purple-400/10 hover:border-purple-400/30 hover:bg-purple-400/5 text-sm sm:text-base"
+                        >
+                          {/* <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" /> */}
+                          <span className="font-medium">Online</span>
+                        </Label>
+                      </div>
+                      <div className="relative sm:col-span-1">
+                        <RadioGroupItem
+                          value="hybrid"
+                          id="hybrid"
+                          className="peer sr-only"
+                        />
+                        <Label
+                          htmlFor="hybrid"
+                          className="flex items-center justify-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl bg-zinc-800/50 backdrop-blur-md border border-white/10 cursor-pointer transition-all duration-200 peer-checked:border-purple-400/50 peer-checked:bg-purple-400/10 hover:border-purple-400/30 hover:bg-purple-400/5 text-sm sm:text-base"
+                        >
+                          {/* <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" /> */}
+                          <span className="font-medium">Hybrid</span>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
               </div>
 
+              {/* Location Details */}
               {(locationType === "physical" || locationType === "hybrid") && (
-                <div className="space-y-4">
+                <>
+                  <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
+                    <InputField
+                      id="venue"
+                      label="Venue Name"
+                      type="text"
+                      placeholder="Enter venue name"
+                      icon={<Building className="w-4 h-4" />}
+                      required
+                      error={errors?.venueName?.message}
+                      {...register("venueName")}
+                    />
+                  </div>
+                  <div className="sm:col-span-1 lg:col-span-2 xl:col-span-2">
+                    <InputField
+                      id="address"
+                      label="Address"
+                      type="text"
+                      placeholder="Enter full address"
+                      icon={<MapPin className="w-4 h-4" />}
+                      required
+                      error={errors?.address?.message}
+                      {...register("address")}
+                    />
+                  </div>
+                </>
+              )}
+
+              {(locationType === "online" || locationType === "hybrid") && (
+                <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
                   <InputField
-                    id="venue"
-                    label="Venue Name"
-                    type="text"
-                    placeholder="Enter venue name"
-                    icon={<Building className="w-4 h-4" />}
+                    id="onlineLink"
+                    label="Online Meeting Link"
+                    type="url"
+                    placeholder="https://zoom.us/j/..."
+                    icon={<Globe className="w-4 h-4" />}
                     required
-                    {...register("venueName")}
-                  />
-                  <InputField
-                    id="address"
-                    label="Address"
-                    type="text"
-                    placeholder="Enter full address"
-                    icon={<MapPin className="w-4 h-4" />}
-                    required
-                    {...register("address")}
+                    error={errors?.onlineLink?.message}
+                    {...register("onlineLink")}
                   />
                 </div>
               )}
 
-              {(locationType === "online" || locationType === "hybrid") && (
-                <InputField
-                  id="onlineLink"
-                  label="Online Meeting Link"
-                  type="url"
-                  placeholder="https://zoom.us/j/..."
-                  icon={<Globe className="w-4 h-4" />}
-                  required
-                  {...register("onlineLink")}
-                />
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <UserCircle className="w-5 h-5 text-white" />
-                Host Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Host Information */}
+              <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
                 <InputField
                   id="hostName"
                   label="Host Name"
@@ -331,8 +276,12 @@ export default function EventForm() {
                   placeholder="Your name or organization"
                   icon={<User className="w-4 h-4" />}
                   required
+                  error={errors?.hostName?.message}
                   {...register("hostName")}
                 />
+              </div>
+
+              <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
                 <InputField
                   id="contactEmail"
                   label="Contact Email"
@@ -340,151 +289,108 @@ export default function EventForm() {
                   placeholder="contact@example.com"
                   icon={<Mail className="w-4 h-4" />}
                   required
+                  error={errors?.contactEmail?.message}
                   {...register("contactEmail")}
                 />
               </div>
-              <div className="mt-6">
+
+              <div className="sm:col-span-2 lg:col-span-1 xl:col-span-4">
                 <InputField
                   id="contactPhone"
                   label="Contact Phone"
                   type="tel"
                   placeholder="+1 (555) 123-4567"
                   icon={<Phone className="w-4 h-4" />}
+                  error={errors?.contactPhone?.message}
                   {...register("contactPhone")}
                 />
               </div>
-            </CardContent>
-          </Card>
 
-          <Card className="bg-[#2a2a2a] border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <BadgeIndianRupee className="w-5 h-5 text-white-500" />
-                <div>Ticketing & Pricing</div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-[#1e1e1e] rounded-lg border border-gray-600">
-                <div>
-                  <Label className="text-sm font-medium text-gray-200">
-                    Paid Event
-                  </Label>
-                  <p className="text-xs text-gray-400">
-                    Toggle if this is a paid event
-                  </p>
-                </div>
-                <Switch
-                // checked={formData.isPaid}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-gray-200">
-                    Ticket Types
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addTicketType}
-                    className="bg-[#1e1e1e] border-gray-600 text-gray-200 hover:bg-gray-700"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Ticket Type
-                  </Button>
-                </div>
-
-                {tickets.map((ticket, index) => (
-                  <div
-                    key={ticket.id}
-                    className="p-4 bg-[#1e1e1e] rounded-lg border border-gray-600"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <Badge
-                        variant="secondary"
-                        className="bg-blue-600 text-white"
-                      >
-                        Ticket {index + 1}
-                      </Badge>
-                      {tickets.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeTicketType(ticket.id)}
-                          className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label className="text-xs text-gray-400">
-                          Ticket Name
-                        </Label>
-                        <Input
-                          placeholder="General Admission"
-                          value={ticket.name}
-                          onChange={(e) =>
-                            updateTicket(ticket.id, "name", e.target.value)
-                          }
-                          className="bg-[#2a2a2a] border-gray-600 text-gray-100 mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-gray-400">
-                          Price ($)
-                        </Label>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={ticket.price}
-                          onChange={(e) =>
-                            updateTicket(ticket.id, "price", e.target.value)
-                          }
-                          className="bg-[#2a2a2a] border-gray-600 text-gray-100 mt-1"
-                          // disabled={!formData.isPaid}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-gray-400">
-                          Quantity
-                        </Label>
-                        <Input
-                          type="number"
-                          placeholder="100"
-                          value={ticket.quantity}
-                          onChange={(e) =>
-                            updateTicket(ticket.id, "quantity", e.target.value)
-                          }
-                          className="bg-[#2a2a2a] border-gray-600 text-gray-100 mt-1"
-                        />
-                      </div>
+              {/* Pricing Toggle */}
+              <div className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 sm:p-6 bg-zinc-800/50 backdrop-blur-md rounded-xl border border-white/10 gap-4 sm:gap-0">
+                  <div className="flex items-center gap-3">
+                    {/* <BadgeIndianRupee className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" /> */}
+                    <div>
+                      <Label className="text-base sm:text-lg font-semibold text-white">
+                        Paid Event
+                      </Label>
+                      <p className="text-xs sm:text-sm text-gray-300">
+                        Toggle if this is a paid event
+                      </p>
                     </div>
                   </div>
-                ))}
+                  <Controller
+                    control={control}
+                    name="isPaidEvent"
+                    render={({ field }) => (
+                      <Switch
+                        checked={!!field.value}
+                        onCheckedChange={field.onChange}
+                        className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-blue-500"
+                      />
+                    )}
+                  />
+                </div>
               </div>
-            </CardContent>
-          </Card>
-          <div className="flex justify-center gap-2 bottom-0 bg-[#1e1e1e] p-5 rounded-lg shadow-lg border border-white">
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
-              onClick={() => window.history.back()}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              // disabled={isSubmitting}
-              className="inline-flex items-center justify-center px-6 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 hover:scale-105"
-            >
-              Create Event
-            </Button>
+
+              {/* Pricing Details */}
+              {watch("isPaidEvent") && (
+                <>
+                  <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
+                    <InputField
+                      id="price"
+                      label="Ticket Price"
+                      type="number"
+                      placeholder="0"
+                      icon={<IndianRupee className="w-4 h-4" />}
+                      {...register("price")}
+                      error={errors?.price?.message}
+                    />
+                  </div>
+                  <div className="sm:col-span-1 lg:col-span-1 xl:col-span-2">
+                    <InputField
+                      id="quantity"
+                      label="Available Tickets"
+                      type="number"
+                      placeholder="100"
+                      icon={<Tag className="w-4 h-4" />}
+                      {...register("quantity")}
+                      error={errors?.quantity?.message}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Submit Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/10">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-[#1e1e1e]/60 backdrop-blur-md border-white/20 text-gray-300 hover:bg-[#1e1e1e]/80 hover:text-white hover:border-white/30 transition-all duration-200"
+                onClick={() => window.history.back()}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                {mutation.isPending ? (
+                  <>
+                    <Loader className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Create Event
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

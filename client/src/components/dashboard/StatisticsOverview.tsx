@@ -1,11 +1,15 @@
-import React from "react";
 import { Users, Calendar, DollarSign, BarChart } from "lucide-react";
 // import { DonutChart } from './Charts/DonutChart';
 
-const StatisticsOverview: React.FC = () => {
+const StatisticsOverview = ({ events }: { events: any[] }) => {
   // Mock data for statistics
   const stats = [
-    { title: "Total Events", value: "24", icon: Calendar, change: "+3" },
+    {
+      title: "Total Events",
+      value: events.length,
+      icon: Calendar,
+      change: "+3",
+    },
     { title: "Total Attendees", value: "1,240", icon: Users, change: "+168" },
     { title: "Revenue", value: "$12,400", icon: DollarSign, change: "+$2,100" },
   ];

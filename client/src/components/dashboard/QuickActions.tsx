@@ -1,11 +1,13 @@
 import React from "react";
 import { CalendarPlus, Users, MapPin, MessageSquare } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const QuickActions: React.FC = () => {
   const actions = [
     {
       title: "Create Event",
       icon: CalendarPlus,
+      url: "/create",
       bgColor: "bg-blue-500/10",
       iconColor: "text-blue-400",
       borderColor: "border-blue-500/30",
@@ -13,6 +15,7 @@ const QuickActions: React.FC = () => {
     {
       title: "View Registrations",
       icon: Users,
+      url: "#",
       bgColor: "bg-purple-500/10",
       iconColor: "text-purple-400",
       borderColor: "border-purple-500/30",
@@ -20,6 +23,7 @@ const QuickActions: React.FC = () => {
     {
       title: "Manage Venues",
       icon: MapPin,
+      url: "#",
       bgColor: "bg-orange-500/10",
       iconColor: "text-orange-400",
       borderColor: "border-orange-500/30",
@@ -27,6 +31,7 @@ const QuickActions: React.FC = () => {
     {
       title: "View Feedback",
       icon: MessageSquare,
+      url: "#",
       bgColor: "bg-green-500/10",
       iconColor: "text-green-400",
       borderColor: "border-green-500/30",
@@ -38,7 +43,8 @@ const QuickActions: React.FC = () => {
       <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 gap-3">
         {actions.map((action, index) => (
-          <button
+          <Link
+            to={action.url}
             key={index}
             className={`flex flex-col items-center justify-center p-4 rounded-lg ${action.bgColor} border ${action.borderColor} transition-all hover:scale-105 duration-300`}
           >
@@ -46,7 +52,7 @@ const QuickActions: React.FC = () => {
             <span className="text-sm font-medium text-gray-100">
               {action.title}
             </span>
-          </button>
+          </Link>
         ))}
       </div>
     </div>

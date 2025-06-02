@@ -15,3 +15,6 @@ export type AuthContextType = {
   state: Payload | null;
   dispatch: React.Dispatch<AuthAction>;
 };
+export type outletContext = {
+  events: any[];
+};

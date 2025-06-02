@@ -10,11 +10,12 @@ type InputFieldProps = {
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ id, label, type = "text", placeholder, icon, error, ...rest }, ref) => (
+  ({ id, label, type, placeholder, required, icon, error, ...rest }, ref) => (
     <div className="space-y-2">
       {label && (
         <label htmlFor={id} className="text-zinc-300 block">
           {label}
+          {required && <span className="text-red-400 text-xl">*</span>}
         </label>
       )}
       <div className="relative">
@@ -25,6 +26,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
           id={id}
           ref={ref}
           type={type}
+          required={required}
           placeholder={placeholder}
           className={`w-full pl-9 bg-zinc-800/50 border ${
             error ? "border-red-500" : "border-zinc-700"
