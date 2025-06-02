@@ -2,36 +2,36 @@ import { Calendar, MapPin, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Mock data for events
-const eventsMockData = [
-  {
-    id: 1,
-    name: "Tech Conference 2025",
-    date: "May 15, 2025",
-    location: "San Francisco Convention Center",
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    name: "Product Launch Webinar",
-    date: "April 10, 2025",
-    location: "Virtual Event",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Annual Developers Meetup",
-    date: "June 22, 2025",
-    location: "New York Tech Hub",
-    status: "upcoming",
-  },
-  {
-    id: 4,
-    name: "UI/UX Workshop Series",
-    date: "April 5, 2025",
-    location: "Chicago Design Center",
-    status: "cancelled",
-  },
-];
+// const eventsMockData = [
+//   {
+//     id: 1,
+//     name: "Tech Conference 2025",
+//     date: "May 15, 2025",
+//     location: "San Francisco Convention Center",
+//     status: "upcoming",
+//   },
+//   {
+//     id: 2,
+//     name: "Product Launch Webinar",
+//     date: "April 10, 2025",
+//     location: "Virtual Event",
+//     status: "active",
+//   },
+//   {
+//     id: 3,
+//     name: "Annual Developers Meetup",
+//     date: "June 22, 2025",
+//     location: "New York Tech Hub",
+//     status: "upcoming",
+//   },
+//   {
+//     id: 4,
+//     name: "UI/UX Workshop Series",
+//     date: "April 5, 2025",
+//     location: "Chicago Design Center",
+//     status: "cancelled",
+//   },
+// ];
 
 const UpcomingEvents = ({ events }: { events: any[] }) => {
   // Helper function to get status badge style
