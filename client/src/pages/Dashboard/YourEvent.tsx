@@ -68,6 +68,7 @@ function formatTime(dateISO: string): string {
 }
 
 function getStatus(startISO: string, endISO: string): string {
+  if (!startISO || !endISO) return "";
   const now = new Date();
   const startDate = parseISO(startISO);
   const endDate = parseISO(endISO);
@@ -115,7 +116,7 @@ export default function YourEvents() {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <DashboardNav title="Your Events" />
 
-        {events.length === 0 ? (
+        {!events || events.length === 0 ? (
           <div className="text-center py-16">
             <Calendar className="mx-auto h-16 w-16 text-gray-500 mb-4" />
             <h3 className="text-xl font-semibold text-gray-300 mb-2">
@@ -127,12 +128,15 @@ export default function YourEvents() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {events.map((event) => {
-              const status = getStatus(event.startDateTime, event.endDateTime);
+            {events?.map((event) => {
+              const status = getStatus(
+                event?.startDateTime,
+                event?.endDateTime
+              );
 
               return (
                 <div
-                  key={event._id}
+                  key={event?._id}
                   className="group relative  bg-[#252525]  rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-purple-400/10 hover:border-purple-400/50 transition-all duration-300 hover:scale-[1.02]"
                 >
                   {/* Header with Status and Actions */}
@@ -179,12 +183,12 @@ export default function YourEvents() {
 
                     {/* Event Title */}
                     <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 leading-tight">
-                      {event.title}
+                      {event?.title}
                     </h3>
 
                     {/* Event Description */}
                     <p className="text-gray-300 text-sm leading-relaxed line-clamp-3 mb-6">
-                      {event.description}
+                      {event?.description}
                     </p>
                   </div>
 
@@ -192,8 +196,10 @@ export default function YourEvents() {
                   <div className="px-6 pb-6 space-y-4">
                     {/* Date and Time Section */}
                     {(() => {
-                      const startDate = parseISO(event.startDateTime);
-                      const endDate = parseISO(event.endDateTime);
+                      if (!event || !event.startDateTime || !event.endDateTime)
+                        return null;
+                      const startDate = parseISO(event?.startDateTime);
+                      const endDate = parseISO(event?.endDateTime);
                       const isSameDay =
                         format(startDate, "yyyy-MM-dd") ===
                         format(endDate, "yyyy-MM-dd");
@@ -206,11 +212,11 @@ export default function YourEvents() {
                             </div>
                             <div className="flex-1">
                               <div className="text-gray-300 font-medium">
-                                {formatDate(event.startDateTime)}
+                                {formatDate(event?.startDateTime)}
                               </div>
                               <div className="text-gray-500 text-xs">
-                                {formatTime(event.startDateTime)} -{" "}
-                                {formatTime(event.endDateTime)}
+                                {formatTime(event?.startDateTime)} -{" "}
+                                {formatTime(event?.endDateTime)}
                               </div>
                             </div>
                           </div>
@@ -228,10 +234,10 @@ export default function YourEvents() {
                               </div>
                               <div className="flex-1">
                                 <div className="text-gray-300 font-medium">
-                                  Starts: {formatDate(event.startDateTime)}
+                                  Starts: {formatDate(event?.startDateTime)}
                                 </div>
                                 <div className="text-gray-500 text-xs">
-                                  {formatTime(event.startDateTime)}
+                                  {formatTime(event?.startDateTime)}
                                 </div>
                               </div>
                             </div>
@@ -241,10 +247,10 @@ export default function YourEvents() {
                               </div>
                               <div className="flex-1">
                                 <div className="text-gray-300 font-medium">
-                                  Ends: {formatDate(event.endDateTime)}
+                                  Ends: {formatDate(event?.endDateTime)}
                                 </div>
                                 <div className="text-gray-500 text-xs">
-                                  {formatTime(event.endDateTime)}
+                                  {formatTime(event?.endDateTime)}
                                 </div>
                               </div>
                             </div>
@@ -259,22 +265,22 @@ export default function YourEvents() {
                         <MapPin size={16} className="text-blue-400" />
                       </div>
                       <div className="flex-1">
-                        {event.type === "online" ? (
+                        {event?.type === "online" ? (
                           <div>
                             <div className="text-gray-300 font-medium">
                               Online Event
                             </div>
                             <div className="text-gray-500 text-xs truncate">
-                              {event.onlineLink || "Link will be shared"}
+                              {event?.onlineLink || "Link will be shared"}
                             </div>
                           </div>
                         ) : (
                           <div>
                             <div className="text-gray-300 font-medium">
-                              {event.venueName || "Venue TBA"}
+                              {event?.venueName || "Venue TBA"}
                             </div>
                             <div className="text-gray-500 text-xs">
-                              {event.address || "Address TBD"}
+                              {event?.address || "Address TBD"}
                             </div>
                           </div>
                         )}
