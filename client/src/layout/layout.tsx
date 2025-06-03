@@ -9,9 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function Layout() {
   const fetchEvents = async () => {
-    const response = await api.get(
-      "http://localhost:5000/api/events/get-your-events"
-    );
+    const response = await api.get("/events/get-your-events");
     return response.data;
   };
   const { data: events, isLoading } = useQuery({
