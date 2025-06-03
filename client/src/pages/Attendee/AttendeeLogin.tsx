@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Loader } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import InputField from "../../components/InputField";
 import { FormValidator } from "../../utils/FormValidator";
 import { loginAttendeeSchema } from "../../validations/Attendee";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
-// import * as yup from "yup";
+import Loaders from "@/components/Loader";
 
 type Attendee = {
   mail: string;
@@ -55,7 +55,7 @@ export default function AttendeeLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e] py-20 p-4">
-      {mutation.isPending && <Loader />}
+      {mutation.isPending && <Loaders head={"Signing in..."} />}
       <div className="relative w-full max-w-md border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">

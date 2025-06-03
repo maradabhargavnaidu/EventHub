@@ -17,4 +17,5 @@ export type AuthContextType = {
 };
 export type outletContext = {
   events: any[];
+  isLoading: boolean;
 };

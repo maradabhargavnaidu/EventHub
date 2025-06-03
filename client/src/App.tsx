@@ -7,7 +7,7 @@ import Loader from "./components/Loader";
 import Navbar from "./components/home/Navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import YourEvents from "./pages/Dashboard/YourEvent";
-const Home = lazy(() => import("./pages/Home"));
+import Home from "./pages/Home";
 const Pricing = lazy(() => import("./pages/Pricing"));
 const EventHostsSignUp = lazy(
   () => import("./pages/EventsHosts/EventHostsSignUp")
@@ -42,10 +42,11 @@ const App = () => {
       : route === location.pathname
   );
   return (
-    <AuthProvider>
-      {!shouldHideNavbar && <Navbar />}
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<Loader />}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        {!shouldHideNavbar && <Navbar />}
+
+        <Suspense fallback={<Loader head={"Loading..."} />}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/get-started" element={<GetStarted />} />
@@ -64,19 +65,20 @@ const App = () => {
             </Route>
           </Routes>
         </Suspense>
-      </QueryClientProvider>
-      <Toaster
-        position="top-right"
-        expand={true}
-        toastOptions={{
-          style: {
-            marginBottom: "12px",
-            borderRadius: "8px",
-            padding: "12px 16px",
-          },
-        }}
-      />
-    </AuthProvider>
+
+        <Toaster
+          position="top-right"
+          expand={true}
+          toastOptions={{
+            style: {
+              marginBottom: "12px",
+              borderRadius: "8px",
+              padding: "12px 16px",
+            },
+          }}
+        />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 

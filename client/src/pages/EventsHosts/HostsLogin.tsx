@@ -9,7 +9,7 @@ import { api } from "../../config/api";
 import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import Loader from "@/components/Loader";
+import Loaders from "@/components/Loader";
 type Host = {
   mail: string;
   password: string;
@@ -50,7 +50,7 @@ export default function HostsLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1e1e1e] py-20 p-4">
-      {mutation.isPending && <Loader />}
+      {mutation.isPending && <Loaders head={"Signing in..."} />}
       <div className="relative w-full max-w-md border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">
           <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">

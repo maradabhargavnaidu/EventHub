@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { AuthAction, Payload } from "../../types/types";
 
 export const init: Payload = {
@@ -9,10 +10,12 @@ export const init: Payload = {
   role: "",
 };
 export const reducer = (state: any, action: AuthAction) => {
+  const queryClient = useQueryClient();
   switch (action.type) {
     case "LOGIN":
       localStorage.setItem("token", action.payload.token);
-      console.log(action.payload);
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      // console.log(action.payload);
       return {
         ...state,
         isAuthenticated: true,
@@ -24,6 +27,7 @@ export const reducer = (state: any, action: AuthAction) => {
       };
     case "LOGOUT":
       localStorage.removeItem("token");
+      queryClient.clear();
       return {
         ...state,
         isAuthenticated: false,

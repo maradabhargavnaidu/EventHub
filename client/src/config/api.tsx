@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://eventhub-qrau.onrender.com/api";
-// const API_LOCAL_URL = "http://localhost:5000/api";
+// const API_BASE_URL = "https://eventhub-qrau.onrender.com/api";
+const API_LOCAL_URL = "http://localhost:5000/api";
 export const api = axios.create({
-  baseURL: API_BASE_URL,
-  // baseURL: API_LOCAL_URL,
+  // baseURL: API_BASE_URL,
+  baseURL: API_LOCAL_URL,
 });
 
 api.interceptors.request.use(

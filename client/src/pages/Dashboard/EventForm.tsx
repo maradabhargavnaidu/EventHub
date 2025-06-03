@@ -28,6 +28,7 @@ import { FormValidator } from "@/utils/FormValidator";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/config/api";
 import DashboardNav from "./DashboardNav";
+import Loaders from "@/components/Loader";
 
 export type EventFormData = {
   title: string;
@@ -92,14 +93,7 @@ export default function EventForm() {
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-gray-100">
       <div className="container mx-auto p-4 sm:p-6 max-w-7xl">
-        {mutation.isPending && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-[#1e1e1e]/90 backdrop-blur-md border border-white/10 rounded-xl p-6 flex items-center gap-3">
-              <Loader className="w-6 h-6 animate-spin text-purple-400" />
-              <span className="text-white">Creating your event...</span>
-            </div>
-          </div>
-        )}
+        {mutation.isPending && <Loaders head={"Creating Your Event..."} />}
 
         {/* Header */}
         <DashboardNav title="CreateEvent" />

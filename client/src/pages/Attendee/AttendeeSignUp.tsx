@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
-import Loader from "@/components/Loader";
+import Loaders from "@/components/Loader";
 type Attendee = {
   name: string;
   mail: string;
@@ -59,7 +59,7 @@ const AttendeeSignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-20 bg-[#1e1e1e]">
-      {mutation.isPending && <Loader />}
+      {mutation.isPending && <Loaders head={"Creating your Account..."} />}
       <div className="absolute inset-0 bg-[#1e1e1e] bg-opacity-90 backdrop-blur-sm" />
       <div className="relative w-full max-w-lg border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl rounded-lg p-6">
         <div className="text-center">

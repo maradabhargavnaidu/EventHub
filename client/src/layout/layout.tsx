@@ -14,7 +14,7 @@ export default function Layout() {
     );
     return response.data;
   };
-  const { data: events } = useQuery({
+  const { data: events, isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: fetchEvents,
     staleTime: 1000 * 60 * 5,
@@ -27,7 +27,7 @@ export default function Layout() {
         {/* <SidebarTrigger className="w-[100%] bg-[#1E1E1E] text-white" /> */}
         {/* <Navbar /> */}
 
-        <Outlet context={{ events }} />
+        <Outlet context={{ events, isLoading }} />
       </main>
     </SidebarProvider>
   );

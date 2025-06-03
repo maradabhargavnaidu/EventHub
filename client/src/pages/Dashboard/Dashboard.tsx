@@ -7,14 +7,16 @@ import StatisticsOverview from "@/components/dashboard/StatisticsOverview";
 import DashboardNav from "./DashboardNav";
 import { outletContext } from "@/types/types";
 import { useOutletContext } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 const Dashboard = () => {
   // useEffect(() => {}, []);
-  const { events } = useOutletContext<outletContext>();
+  const { events, isLoading } = useOutletContext<outletContext>();
   return (
     <div className="min-h-screen bg-[#1e1e1e] text-gray-100">
       <div className="container mx-auto p-4">
         <DashboardNav title="Dashboard" />
+        {isLoading && <Loader />}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <UpcomingEvents events={events} />
