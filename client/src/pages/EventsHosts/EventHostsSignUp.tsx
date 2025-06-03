@@ -46,7 +46,7 @@ const EventHostSignup = () => {
       }
     },
     onError: (error: any) => {
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.message || "Something went wrong..");
       console.log(error);
     },
   });
